@@ -1,0 +1,1135 @@
+BUILD PROMPT — RESEARCHPILOT FROM SCRATCH
+Build a complete production-style AI web application called ResearchPilot from scratch.
+You are acting as a senior full-stack engineer, AI engineer, UI/UX designer, and product architect.
+Do not build a generic chatbot. Build a real AI research product with an agentic research pipeline, web research, evidence extraction, source verification, citations, analytics, evaluation, error handling, and a polished SaaS-quality interface.
+The initial application must be designed to run on Replit using free/open-source technologies and currently available free tiers.
+The target is approximately ₹0/$0 for the MVP, subject to the current quotas and limitations of external free-tier APIs and Replit.
+Do not require any paid service for the basic V1 functionality.
+
+1. CORE PRODUCT
+Product name:
+ResearchPilot
+Tagline:
+AI-powered research that finds, verifies, and explains.
+Purpose:
+A user enters a complex research question.
+Example:
+Compare the EV markets of India, USA and Germany and determine which market has the strongest growth potential over the next five years.
+ResearchPilot should autonomously:
+    1. Understand the question.
+    2. Break it into research sub-questions.
+    3. Create a research plan.
+    4. Generate targeted search queries.
+    5. Search the web.
+    6. Collect relevant sources.
+    7. Classify sources.
+    8. Retrieve webpage content.
+    9. Extract evidence and claims.
+    10. Cross-check important claims.
+    11. Detect conflicting information.
+    12. Synthesize the evidence.
+    13. Generate a professional research report.
+    14. Attach citations to important factual claims.
+    15. Show high-level research progress to the user.
+    16. Record anonymous usage analytics.
+    17. Provide a private admin analytics dashboard.
+    18. Handle failures gracefully.
+    19. Provide an evaluation framework to measure quality.
+
+2. IMPORTANT: NOT A SIMPLE CHATBOT
+Do NOT implement:
+User question
+      ↓
+LLM
+      ↓
+Answer
+Instead implement:
+User
+ ↓
+Research Planner
+ ↓
+Question Decomposition
+ ↓
+Search Planner
+ ↓
+Web Search
+ ↓
+Source Collection
+ ↓
+Source Classification
+ ↓
+Webpage Extraction
+ ↓
+Evidence Extraction
+ ↓
+Claim Analysis
+ ↓
+Conflict Detection
+ ↓
+Fact Checking / Cross-checking
+ ↓
+Evidence Synthesis
+ ↓
+Report Generation
+ ↓
+Citations
+ ↓
+Final Report
+The application should visibly demonstrate this workflow.
+Do not expose private chain-of-thought reasoning.
+Only show safe high-level statuses such as:
+    • Understanding question
+    • Creating research plan
+    • Searching sources
+    • Reading sources
+    • Extracting evidence
+    • Cross-checking claims
+    • Generating report
+
+3. TECHNOLOGY STACK
+Use:
+Frontend
+    • React
+    • Vite
+    • Tailwind CSS
+    • shadcn/ui
+    • Lucide icons
+    • Recharts where useful
+Do NOT use Streamlit.
+The UI must look like a modern AI SaaS product.
+Backend
+    • Python
+    • FastAPI
+    • Pydantic
+Keep the backend modular.
+AI
+Use a currently available free-tier LLM.
+Preferred initial option:
+Google Gemini
+Alternative:
+Groq
+Before implementation, verify the current official free-tier availability and limits.
+Do not assume free usage is unlimited.
+The AI provider must be abstracted behind a service so it can be replaced later.
+Example:
+AIService
+ ├── GeminiProvider
+ ├── GroqProvider
+ └── FutureProvider
+Web research
+Use a legitimate web-search API/service with a current free tier where possible.
+Verify the current free-tier limits before implementation.
+Do not expose search/API keys to the frontend.
+Store secrets in Replit Secrets/environment variables.
+Web extraction
+Use free/open-source Python libraries such as:
+    • httpx/requests
+    • BeautifulSoup
+    • trafilatura
+Choose the most reliable combination.
+Deployment
+Deploy the application through Replit.
+Use GitHub for source control if practical.
+
+4. COST REQUIREMENT
+The application must be designed around:
+₹0 / $0 MVP
+Use:
+    • open-source libraries
+    • free-tier AI
+    • free-tier search
+    • Replit free/available starter resources
+    • free GitHub
+    • no mandatory paid database
+    • no mandatory paid analytics
+    • no mandatory paid domain
+IMPORTANT:
+Do not claim that any external API or hosting platform provides unlimited free usage.
+Implement sensible rate limits so one user cannot consume the entire free quota.
+If a provider's free quota is exhausted, show a clear error instead of silently generating paid usage.
+
+5. DATABASE
+Do NOT require a database for the core research functionality.
+V1 should work without PostgreSQL or a vector database.
+Use in-memory/session state where practical.
+Do not add:
+    • Redis
+    • Pinecone
+    • vector databases
+    • Kubernetes
+    • microservices
+    • message queues
+unless absolutely necessary.
+The application should be a clean modular monolith.
+The architecture should make it possible to add PostgreSQL/pgvector later.
+
+6. UI DESIGN
+The UI is extremely important.
+It should NOT look like:
+    • a basic Bootstrap app
+    • Streamlit
+    • a developer dashboard
+    • a generic ChatGPT clone
+It should look like a polished modern AI SaaS application.
+Use:
+    • excellent typography
+    • generous spacing
+    • modern cards
+    • subtle borders
+    • clean icons
+    • tasteful animations
+    • responsive layouts
+    • accessible color contrast
+    • polished empty states
+    • loading states
+    • error states
+Prefer a professional neutral/light interface with optional dark-mode support if easy to implement.
+
+7. LANDING PAGE
+Create a polished landing page.
+Hero:
+ResearchPilot
+
+AI-powered research that finds, verifies,
+and explains.
+
+Ask complex questions. ResearchPilot searches
+the web, analyzes evidence, cross-checks claims,
+and generates a cited research report.
+
+[ Start Research ]
+Main research input:
+What do you want to research?
+
+┌─────────────────────────────────────────────┐
+│ Compare the EV markets of India, USA and   │
+│ Germany and determine which has the        │
+│ strongest growth potential...              │
+│                                             │
+│                         Start Research →    │
+└─────────────────────────────────────────────┘
+Add suggested research prompts:
+    • Market analysis
+    • Competitor research
+    • Technology research
+    • Business research
+    • Investment research
+    • Scientific research
+
+8. RESEARCH WORKSPACE
+After submitting a question, move to a dedicated research workspace.
+Layout should contain:
+Left/main area
+Research question and progress.
+Right/sidebar
+Live source information.
+Example:
+Researching
+
+Compare EV markets...
+
+Research pipeline
+
+✓ Understanding question
+✓ Creating research plan
+✓ Searching web
+● Analyzing sources
+○ Cross-checking claims
+○ Generating report
+
+14 sources analyzed
+37 claims extracted
+
+Research time: 31 sec
+Source panel:
+Sources
+
+✓ IEA
+✓ Government report
+✓ Reuters
+✓ Industry report
+✓ Research paper
+
+14 sources found
+Do not expose internal chain-of-thought.
+Only show high-level progress.
+
+9. RESEARCH PLANNER
+Create a Python research planner.
+Input:
+user_question
+Output structured JSON similar to:
+{
+  "research_goal": "...",
+  "sub_questions": [
+    "...",
+    "...",
+    "..."
+  ],
+  "search_queries": [
+    "...",
+    "...",
+    "..."
+  ],
+  "required_evidence": [
+    "...",
+    "..."
+  ]
+}
+Use Pydantic models for validation.
+The planner should generate targeted research queries.
+Example:
+User:
+Compare India and USA EV markets.
+Queries might include:
+India EV market 2026
+India EV sales growth
+India EV adoption forecast 2030
+India EV charging infrastructure
+USA EV market 2026
+USA EV sales growth
+USA EV adoption forecast 2030
+USA EV charging infrastructure
+
+10. SEARCH TOOL
+Create a dedicated search service.
+Requirements:
+    • multiple queries
+    • deduplicate URLs
+    • preserve title
+    • preserve URL
+    • preserve source metadata
+    • handle API failures
+    • timeout handling
+    • retry when appropriate
+    • rate limiting
+    • configurable maximum results
+Create an abstraction:
+SearchService
+so providers can be replaced.
+Do not put search logic directly inside the UI.
+
+11. SOURCE CLASSIFICATION
+Classify sources when possible.
+Categories:
+Government
+Academic
+International Organization
+Company
+Financial Institution
+News
+Industry Publication
+Blog
+Unknown
+Also provide a simple quality indicator:
+High
+Medium
+Low
+Unknown
+Do not pretend that the classification is perfectly accurate.
+
+12. WEBPAGE READER
+Build a webpage extraction service.
+Given a URL:
+URL
+ ↓
+HTTP request
+ ↓
+HTML
+ ↓
+Content extraction
+ ↓
+Clean text
+Extract:
+    • title
+    • URL
+    • domain
+    • publication date if available
+    • main text
+    • metadata if available
+Gracefully handle:
+    • timeout
+    • blocked page
+    • empty page
+    • invalid HTML
+    • HTTP errors
+    • JavaScript-only pages
+If one source fails, continue with other sources.
+
+13. EVIDENCE EXTRACTION
+For each useful source, extract structured evidence.
+Example:
+{
+  "claim": "India's EV sales increased...",
+  "evidence": "...",
+  "source_url": "...",
+  "source_title": "...",
+  "source_type": "Government",
+  "confidence": "high"
+}
+The final report must be based primarily on retrieved evidence.
+Do not invent statistics.
+If evidence is insufficient, explicitly say so.
+
+14. CLAIM ANALYSIS
+Extract important factual claims from collected evidence.
+Create a claim structure:
+Claim
+Source
+Evidence
+Confidence
+Date
+Important claims should have traceable sources.
+
+15. CONFLICT DETECTION
+Implement conflict detection.
+If two credible sources disagree, identify the conflict.
+Example:
+Conflicting information detected
+
+EV adoption forecast:
+
+Source A → 35%
+Source B → 28%
+
+Possible explanation:
+Different assumptions or forecast periods.
+
+The report will account for this difference.
+Do not hide conflicting evidence.
+Do not automatically declare one source correct without justification.
+
+16. SYNTHESIS ENGINE
+Create a dedicated synthesis service.
+Inputs:
+    • research question
+    • research plan
+    • sources
+    • evidence
+    • claims
+    • conflicts
+Output:
+A structured professional report.
+Do not simply concatenate source summaries.
+The synthesis should compare evidence and form a reasoned conclusion.
+
+17. FINAL REPORT
+Report structure:
+Research Report
+
+Executive Summary
+
+Key Findings
+
+Detailed Analysis
+
+Comparison
+
+Evidence
+
+Risks / Limitations
+
+Conclusion
+
+Sources
+Adapt the structure depending on the research question.
+Include citations.
+Example:
+India's EV market has experienced rapid growth [1].
+
+Germany currently has substantially higher EV penetration [2].
+
+Sources:
+[1] Government report
+[2] IEA
+Citations should link to actual URLs.
+Never fabricate citations.
+
+18. SOURCE PANEL
+Each source should have a clean card.
+Example:
+IEA
+International Energy Agency
+
+Global EV Outlook 2026
+
+Government / International Organization
+High confidence
+
+[ Open Source ↗ ]
+Use the actual source title/domain.
+
+19. FINAL REPORT FEATURES
+Allow users to:
+    • read report
+    • copy report
+    • open sources
+    • start another research session
+If practical, add:
+    • download as Markdown
+    • download as PDF
+Only use free/open-source tooling.
+Do not make PDF generation a blocker for the core application.
+
+20. ANALYTICS
+Implement application analytics.
+Analytics must be PRIVATE ADMIN-ONLY.
+Normal users must NOT see global analytics.
+Track anonymous events such as:
+visitor_started
+research_started
+search_completed
+source_opened
+report_generated
+research_failed
+Track:
+    • total visitors
+    • unique visitors
+    • research sessions
+    • reports generated
+    • daily usage
+    • weekly usage
+    • monthly usage
+    • average research duration
+    • average sources per research
+    • success rate
+    • failure rate
+    • popular research categories
+Do not collect unnecessary personal information.
+
+21. ADMIN DASHBOARD
+Create:
+/admin
+Protect it with authentication.
+Only the administrator should be able to access it.
+Dashboard example:
+ResearchPilot Admin
+
+Total Visitors       247
+Unique Visitors      183
+Research Sessions     96
+Reports Generated     81
+
+Today                 23
+This Week            127
+This Month           183
+
+Average Research     48 sec
+Sources / Research   11
+Success Rate          92%
+
+Popular Categories
+
+Technology            31%
+Business               24%
+Finance                18%
+Science                14%
+Other                  13%
+Use charts where useful.
+Use Recharts.
+Do not hard-code example numbers.
+Display real collected data.
+
+22. ADMIN SECURITY
+Admin route:
+/admin
+must be protected.
+Admin credentials must NOT be hard-coded into source code.
+Use Replit Secrets/environment variables.
+At minimum implement secure admin authentication suitable for an MVP.
+A normal visitor accessing /admin should receive:
+Access denied
+Do not expose analytics through public API endpoints.
+
+23. RATE LIMITING
+Because this is a public application, implement basic rate limiting.
+The goal is to protect free AI/search quotas.
+Example:
+Anonymous users:
+limited number of research requests per time window.
+Use configurable environment variables.
+Example:
+MAX_RESEARCH_PER_HOUR
+MAX_SEARCHES_PER_RESEARCH
+MAX_SOURCES_PER_RESEARCH
+If the limit is reached:
+You've reached the current free research limit.
+Please try again later.
+
+24. ERROR HANDLING
+Never allow one external failure to crash the application.
+Handle:
+    • LLM API failure
+    • search failure
+    • source timeout
+    • extraction failure
+    • malformed model response
+    • rate limit
+    • empty search results
+    • insufficient evidence
+Use meaningful user-facing messages.
+Example:
+One source could not be retrieved.
+ResearchPilot continued using the remaining sources.
+Backend logs should contain useful diagnostic information.
+Never expose secrets in logs.
+
+25. EVALUATION SYSTEM
+Create:
+/evaluations
+with test cases.
+Example:
+[
+  {
+    "question": "Compare EV adoption in India and Germany.",
+    "requirements": [
+      "uses multiple sources",
+      "contains citations",
+      "provides comparison",
+      "does not invent statistics"
+    ]
+  }
+]
+Build an evaluation script.
+Measure where practical:
+    • source coverage
+    • citation correctness
+    • completeness
+    • factual consistency
+    • retrieval quality
+    • conflict detection
+    • latency
+    • failure rate
+The evaluation results should be documented in the README.
+
+26. OBSERVABILITY
+Track:
+    • research duration
+    • number of search queries
+    • number of sources retrieved
+    • extraction failures
+    • model failures
+    • final success/failure
+    • token usage if provider exposes it
+    • API response errors
+Create clean structured logs.
+Do not log API keys.
+Do not log unnecessary user-sensitive information.
+
+27. SESSION STATE
+V1 does not need permanent user accounts.
+Use session-based state.
+A user should be able to:
+    1. Enter question.
+    2. Run research.
+    3. See progress.
+    4. View final report.
+    5. Start another research session.
+Do not build a complicated user account system unless required for implementation.
+
+28. FUTURE DATABASE SUPPORT
+Design interfaces so persistent storage can later be added.
+Future possibilities:
+PostgreSQL
++
+pgvector
+for:
+    • user accounts
+    • saved reports
+    • research history
+    • semantic search
+    • research collections
+    • "update previous research"
+But DO NOT make this a V1 dependency.
+
+29. PROJECT STRUCTURE
+Prefer approximately:
+researchpilot/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── lib/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── package.json
+│   └── ...
+│
+├── backend/
+│   ├── agents/
+│   │   ├── planner.py
+│   │   ├── researcher.py
+│   │   ├── analyzer.py
+│   │   ├── fact_checker.py
+│   │   └── synthesizer.py
+│   │
+│   ├── tools/
+│   │   ├── search.py
+│   │   └── webpage_reader.py
+│   │
+│   ├── services/
+│   │   ├── ai_service.py
+│   │   ├── search_service.py
+│   │   ├── citation_service.py
+│   │   └── analytics_service.py
+│   │
+│   ├── models/
+│   ├── config.py
+│   ├── main.py
+│   └── requirements.txt
+│
+├── evaluations/
+│   ├── test_cases.json
+│   └── evaluate.py
+│
+├── README.md
+├── .env.example
+└── ...
+You may improve the structure if necessary.
+
+30. API DESIGN
+Create clean endpoints.
+At minimum:
+GET  /api/health
+
+POST /api/research
+
+GET  /api/research/{id}
+
+GET  /api/research/{id}/sources
+For admin:
+GET /api/admin/analytics
+Protect admin endpoints.
+Use Pydantic request/response models.
+
+31. RESEARCH API
+Example request:
+{
+  "question": "Compare the EV markets of India, USA and Germany."
+}
+Response should provide a research identifier.
+Example:
+{
+  "research_id": "abc123",
+  "status": "started"
+}
+The frontend can then poll or use a suitable streaming mechanism to receive progress.
+Choose the simplest reliable architecture.
+If Server-Sent Events are practical, use them for live progress.
+Otherwise use polling.
+Do not introduce unnecessary complexity.
+
+32. RESEARCH STATUS
+Possible statuses:
+queued
+planning
+searching
+reading
+analyzing
+fact_checking
+synthesizing
+completed
+failed
+Expose only appropriate high-level statuses to the user.
+
+33. SECURITY
+Implement basic security best practices:
+    • API keys in environment variables
+    • never expose secrets to React
+    • validate user input
+    • sanitize rendered content
+    • protect admin endpoints
+    • rate limit research
+    • avoid arbitrary code execution
+    • limit webpage request targets appropriately
+    • avoid SSRF vulnerabilities when implementing URL fetching
+    • enforce request timeouts
+    • limit response sizes
+Do not allow arbitrary user URLs to become an unrestricted backend network proxy.
+
+34. PERFORMANCE
+The research agent should avoid unnecessary API calls.
+Implement:
+    • URL deduplication
+    • query deduplication
+    • source limits
+    • reasonable timeouts
+    • limited concurrency
+    • retries only when useful
+    • maximum research duration
+Use parallelism where it improves performance without violating free-tier limits.
+
+35. FREE-TIER PROTECTION
+Create configuration values such as:
+MAX_SEARCH_QUERIES=...
+MAX_RESULTS_PER_QUERY=...
+MAX_SOURCES=...
+MAX_RESEARCH_TIME=...
+MAX_RESEARCH_PER_HOUR=...
+Make these configurable.
+Do not use aggressive defaults that can burn through free quotas.
+
+36. ENVIRONMENT VARIABLES
+Create:
+.env.example
+containing placeholders such as:
+GEMINI_API_KEY=
+SEARCH_API_KEY=
+ADMIN_USERNAME=
+ADMIN_PASSWORD=
+MAX_RESEARCH_PER_HOUR=
+MAX_SOURCES_PER_RESEARCH=
+Do NOT place actual credentials in the repository.
+If a provider doesn't require an API key, don't create a fake variable.
+
+37. README
+Create a professional README.
+Include:
+ResearchPilot
+AI-powered autonomous research assistant.
+Features
+    • Research planning
+    • Web search
+    • Source classification
+    • Evidence extraction
+    • Claim analysis
+    • Conflict detection
+    • Fact checking
+    • AI synthesis
+    • Citations
+    • Analytics
+    • Evaluation
+    • Rate limiting
+    • Production-style deployment
+Architecture
+Include an architecture diagram using Mermaid if appropriate.
+Tech Stack
+Explain frontend/backend/AI/search/deployment.
+How It Works
+Explain the research pipeline.
+Setup
+Provide exact setup instructions.
+Environment Variables
+Explain every required variable.
+Running Locally
+Provide commands.
+Deployment
+Explain how to deploy on Replit.
+Evaluation
+Explain evaluation methodology/results.
+Cost
+Clearly explain:
+V1 is designed to run using free/open-source technologies and current free tiers, but API/hosting quotas apply and free usage is not unlimited.
+Security
+Explain secrets and admin protection.
+Limitations
+Be honest about limitations.
+
+38. UI PAGES
+Create at minimum:
+/
+    Landing + research interface
+
+/research/:id
+    Research progress + final report
+
+/admin/login
+    Admin authentication
+
+/admin
+    Private analytics dashboard
+If appropriate:
+/about
+but do not waste time on unnecessary pages.
+
+39. RESPONSIVE DESIGN
+The application must work on:
+    • desktop
+    • laptop
+    • tablet
+    • mobile
+The main research interface should remain usable on narrow screens.
+
+40. ACCESSIBILITY
+Implement reasonable accessibility:
+    • semantic HTML
+    • keyboard navigation
+    • accessible buttons
+    • form labels
+    • appropriate aria labels
+    • sufficient contrast
+    • visible focus states
+
+41. EMPTY STATES
+Create polished empty states.
+Example:
+Start your research
+
+Ask ResearchPilot a complex question
+and let it investigate the web for you.
+
+42. LOADING STATES
+Do not show blank screens.
+Use:
+    • skeletons
+    • progress indicators
+    • status indicators
+    • animated loading states
+The UI should clearly communicate what is happening.
+
+43. ERROR STATES
+Design polished error messages.
+Example:
+Research couldn't be completed
+
+We weren't able to retrieve enough reliable
+sources for this question.
+
+Try:
+• simplifying your question
+• trying a different topic
+• trying again later
+
+[ Try Again ]
+
+44. SOURCE QUALITY
+Where possible, show:
+Source quality:
+High
+But clearly treat this as an estimate.
+Do not imply that the system has perfect source verification.
+
+45. REPORT QUALITY
+The final report must prioritize:
+    • accuracy
+    • traceability
+    • clarity
+    • useful synthesis
+    • source citations
+    • explicit uncertainty
+If sources are insufficient:
+Insufficient evidence
+
+The available sources did not provide enough
+reliable information to make a confident conclusion.
+Do not hallucinate.
+
+46. ANALYTICS PRIVACY
+Analytics should be anonymous/minimal.
+Do not collect:
+    • passwords in analytics
+    • API keys
+    • unnecessary personal information
+    • private research content unless necessary
+The admin dashboard should contain aggregate usage metrics.
+
+47. NO PAYMENT SYSTEM
+Do not implement payments.
+The initial version is completely free for users within available quotas.
+Future monetization is outside V1.
+
+48. NO CUSTOM DOMAIN REQUIRED
+Use the Replit-provided deployment URL.
+Do not purchase a domain.
+The product should still look professional.
+
+49. GITHUB
+Prepare the repository for GitHub.
+Ensure:
+.env
+and secrets are excluded.
+Create:
+.gitignore
+appropriately.
+Do not commit API keys.
+
+50. TESTING
+Create basic tests for:
+Backend
+    • health endpoint
+    • planner validation
+    • search result deduplication
+    • source classification
+    • evidence parsing
+    • conflict detection
+    • report generation structure
+    • rate limiting
+Frontend
+Test critical UI flows where practical.
+At minimum verify:
+Landing
+→ Submit question
+→ Research progress
+→ Final report
+→ Sources
+
+51. DEMO EXPERIENCE
+A recruiter should be able to open the live application and understand it quickly.
+The ideal flow:
+Open ResearchPilot
+        ↓
+Enter research question
+        ↓
+Start Research
+        ↓
+Watch research pipeline
+        ↓
+See sources
+        ↓
+Read cited report
+The demo should take approximately 1–2 minutes.
+
+52. IMPORTANT RECRUITER SIGNALS
+The final implementation should make it obvious that I understand:
+    • LLM application architecture
+    • agents
+    • tool use
+    • retrieval
+    • structured outputs
+    • source verification
+    • evaluation
+    • APIs
+    • backend engineering
+    • frontend engineering
+    • deployment
+    • observability
+    • security
+    • cost control
+The README should explicitly communicate these engineering decisions.
+
+53. DO NOT OVER-ENGINEER
+This is a portfolio MVP.
+Do not build:
+    • Kubernetes
+    • Docker orchestration
+    • microservices
+    • distributed queues
+    • complex vector search
+    • enterprise IAM
+    • unnecessary databases
+    • unnecessary third-party services
+The priority is:
+working product > unnecessary architecture
+
+54. BUILD STRATEGY
+Do NOT attempt to generate a superficial application with placeholder buttons.
+Actually implement the core functionality.
+Build in this order:
+Phase 1
+Backend foundation.
+Phase 2
+AI planner.
+Phase 3
+Search tool.
+Phase 4
+Webpage extraction.
+Phase 5
+Evidence extraction.
+Phase 6
+Conflict detection.
+Phase 7
+Synthesis/citations.
+Phase 8
+Frontend.
+Phase 9
+Live research progress.
+Phase 10
+Analytics.
+Phase 11
+Admin authentication.
+Phase 12
+Rate limiting.
+Phase 13
+Evaluation.
+Phase 14
+Deployment.
+Phase 15
+README and final polish.
+After each major phase, run tests and fix errors before continuing.
+
+55. IMPORTANT: VERIFY CURRENT SERVICES
+Before choosing external providers, check their CURRENT official documentation.
+Verify:
+    • Gemini free tier
+    • Groq free tier if used
+    • selected search API free tier
+    • Replit current free/starter capabilities
+    • current deployment requirements
+Do not rely on outdated pricing information.
+If a supposedly free provider is no longer free, choose another legitimate free option.
+Do not silently introduce paid services.
+
+56. FALLBACKS
+Design provider interfaces so we can later switch:
+Gemini → Groq → another model
+and:
+Search Provider A → Search Provider B
+without rewriting the research agent.
+
+57. QUALITY BAR
+Before considering the project finished, verify:
+Functional
+    • User can submit research question.
+    • Planner works.
+    • Search works.
+    • Web extraction works.
+    • Evidence extraction works.
+    • Conflict detection works.
+    • Synthesis works.
+    • Citations work.
+    • Report renders correctly.
+    • Errors are handled.
+UI
+    • Landing page looks professional.
+    • Research progress looks polished.
+    • Source cards work.
+    • Report page looks professional.
+    • Responsive design works.
+    • Loading states work.
+    • Error states work.
+Engineering
+    • API keys protected.
+    • Admin protected.
+    • Rate limiting works.
+    • Logs work.
+    • Evaluation exists.
+    • No secrets committed.
+Deployment
+    • Works on Replit.
+    • Public URL works.
+    • Environment variables configured.
+    • Production build works.
+Portfolio
+    • README is professional.
+    • Architecture documented.
+    • Evaluation documented.
+    • Limitations documented.
+    • Cost model documented.
+
+58. FINAL DESIGN PRINCIPLE
+ResearchPilot should feel like:
+Perplexity-style research workflow + autonomous AI agent + evidence verification + professional SaaS dashboard
+but it must be an original implementation.
+Do not copy proprietary branding, design assets, or code.
+
+59. FINAL REQUIREMENT
+Build the actual application now.
+Do not merely give me an explanation of how to build it.
+Create the files, install the required dependencies, implement the backend and frontend, connect the AI/search services, run the application, test the main workflow, fix errors, and prepare it for Replit deployment.
+If an API key is required but cannot be automatically provided, create the correct environment variable/secret placeholder and clearly tell me exactly what I need to add in Replit Secrets.
+If a particular free API is unavailable, do not substitute a paid API without asking. Choose a currently available free/open-source alternative where technically feasible.
+At the end, provide:
+    1. What was built.
+    2. Project structure.
+    3. Required API keys/secrets.
+    4. Which resources are free and their relevant limitations.
+    5. How to run it.
+    6. How to deploy it on Replit.
+    7. How to access the admin analytics.
+    8. How to test the research agent.
+    9. Known limitations.
+    10. Recommended next improvements.
+The finished application must be a real working AI Research Agent, not a mockup.

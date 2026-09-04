@@ -1,0 +1,267 @@
+# RESEARCHPILOT — CONTINUE FROM PREVIOUS REPLIT ACCOUNT
+
+This is an existing ResearchPilot project imported from another Replit account because the previous Replit Agent reached its daily free quota.
+
+**DO NOT rebuild the project.**
+**DO NOT restart from Phase 0.**
+**DO NOT overwrite working code.**
+
+The previous project state was:
+
+### COMPLETED
+
+**Phase 0 — Project Inspection & Foundation: COMPLETE**
+
+**Phase 1 — Backend Foundation: COMPLETE**
+
+The following checks passed:
+
+* API server typecheck
+* API server production bundle
+* `/api/health` runtime check
+* `/api/healthz` runtime check
+* Structured unknown-route response check
+* Request logging verification
+
+The application was running successfully.
+
+### CURRENT STATE
+
+Working:
+
+* Backend configuration
+* API server
+* Logging
+* Health checks
+* Error handling
+* ResearchPilot landing page
+
+Not yet implemented:
+
+* AI provider integration
+* Research planner
+* Web search
+* Web extraction
+* Source classification
+* Evidence extraction
+* Claim analysis
+* Conflict detection
+* Fact checking
+* Report synthesis
+* Final research report
+
+### WHERE THE PREVIOUS AGENT STOPPED
+
+The previous Agent had started:
+
+**Phase 2 — AI Provider**
+
+It attempted to use Replit's managed Gemini integration, but that required Replit AI Integrations and was unavailable.
+
+It then switched to the intended architecture using:
+
+`GEMINI_API_KEY`
+
+as a securely stored environment/workspace secret.
+
+The API key must NEVER be exposed in chat, source code, frontend code, logs, commits, or API responses.
+
+## YOUR FIRST ACTION
+
+Before changing anything, inspect the existing project.
+
+Read:
+
+1. `README.md`
+2. `BUILD_STATUS.md` if present
+3. Git history
+4. Existing backend structure
+5. Existing frontend structure
+6. Existing AI/provider-related files
+7. Existing tests and configuration
+
+Then determine exactly what was completed and what partial Phase 2 work already exists.
+
+Run the existing relevant tests/checks.
+
+Do NOT assume the previous Agent's description is accurate if the repository shows otherwise.
+
+The repository itself is the source of truth.
+
+## IMPORTANT
+
+Do NOT ask me to paste the Gemini API key into chat.
+
+Check whether `GEMINI_API_KEY` is already configured as a Replit Secret.
+
+You may verify that the variable exists, but:
+
+* never print its value
+* never log its value
+* never expose it in responses
+* never put it into source code
+
+If the secret is missing, tell me exactly what Secret name is required and STOP.
+
+## RESUME POINT
+
+After inspecting the project, resume from:
+
+**Phase 2 — AI Provider**
+
+Reuse any correct Phase 2 work that already exists.
+
+Do not rebuild Phase 0 or Phase 1.
+
+## PHASE 2 ONLY
+
+Implement only the AI provider layer.
+
+The goal is:
+
+Application
+→ Provider-independent AI service
+→ Gemini provider
+
+The rest of ResearchPilot should eventually use this abstraction rather than directly depending on Gemini.
+
+Create or continue the appropriate AI service abstraction based on the existing architecture.
+
+Use the existing project conventions where possible.
+
+### Minimal Phase 2 functionality
+
+Implement a minimal provider-response check proving that:
+
+1. Gemini configuration loads correctly.
+2. `GEMINI_API_KEY` is read securely from the environment.
+3. A minimal Gemini request can be made.
+4. A valid response can be received.
+5. Provider errors are handled cleanly.
+6. Secrets are never exposed.
+7. The provider abstraction is usable by future phases.
+
+Keep the test minimal to conserve API quota.
+
+## DO NOT IMPLEMENT YET
+
+Do NOT implement:
+
+* Research Planner
+* Web Search
+* Web Extraction
+* Source Classification
+* Evidence Extraction
+* Claim Analysis
+* Conflict Detection
+* Fact Checking
+* Synthesis
+* Final Reports
+
+Those belong to later phases.
+
+## FREE-COST REQUIREMENT
+
+Keep the project compatible with the ₹0 development objective.
+
+Do not introduce:
+
+* paid APIs
+* paid Replit services
+* Replit AI Integrations
+* unnecessary infrastructure
+
+Gemini should be accessed through the configured API key and its available free usage.
+
+## PORTABILITY REQUIREMENT
+
+This project must remain portable between Replit accounts.
+
+The project must not depend on:
+
+* the previous Replit account
+* previous Agent conversation history
+* hidden Agent memory
+* Replit-specific proprietary AI functionality
+
+GitHub/repository contents, documentation, configuration, and build state are the source of truth.
+
+Maintain:
+
+* `README.md`
+* `.env.example`
+* `BUILD_STATUS.md`
+
+Do not commit secrets.
+
+## TESTING
+
+After implementing Phase 2, run appropriate:
+
+* type checks
+* build checks
+* provider tests
+* minimal Gemini response test
+* application startup test
+
+Only report PASS if the tests actually pass.
+
+If Gemini cannot be tested because of quota, API availability, missing configuration, or another real issue, report it honestly.
+
+Do not fabricate successful results.
+
+## STRICT STOP RULE
+
+Complete ONLY Phase 2.
+
+Do not automatically start Phase 3.
+
+After Phase 2 is complete, STOP and wait for my approval.
+
+Use exactly this final format:
+
+RESEARCHPILOT BUILD STATUS
+
+Current Phase: Phase 2 — AI Provider
+Status: COMPLETE / BLOCKED / PARTIALLY COMPLETE
+
+Implemented:
+
+* ...
+
+Files Created/Modified:
+
+* ...
+
+Tests:
+
+* ...
+
+Test Result:
+PASS / FAIL / PARTIAL
+
+Current Application Status:
+
+* Running / Not running
+* What currently works
+* What does not work
+
+Required User Action:
+
+* None OR exact action required
+
+Next Phase:
+Phase 3 — Research Planner
+
+STOPPED HERE.
+Waiting for approval to continue.
+
+### CRITICAL
+
+First inspect and report the current repository state.
+
+Do not start implementing until you have verified what already exists.
+
+Do not rebuild completed phases.
+Do not skip phases.
+Do not continue beyond Phase 2.

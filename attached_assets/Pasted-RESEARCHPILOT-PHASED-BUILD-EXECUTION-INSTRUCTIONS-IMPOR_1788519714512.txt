@@ -1,0 +1,904 @@
+RESEARCHPILOT — PHASED BUILD EXECUTION INSTRUCTIONS
+IMPORTANT: Do NOT build the entire ResearchPilot application in one pass.
+You must build this project phase-by-phase, with strict checkpoints.
+Your job is to implement ONE PHASE AT A TIME, test it thoroughly, then STOP and report the completed phase.
+Do not automatically continue to the next phase.
+
+CORE RULE
+After completing a phase:
+    1. Implement everything required for that phase.
+    2. Run the relevant tests.
+    3. Start/run the application where appropriate.
+    4. Verify that the functionality actually works.
+    5. Fix errors found during testing.
+    6. Review the implementation against the requirements.
+    7. STOP.
+Do NOT begin the next phase automatically.
+
+REQUIRED RESPONSE AFTER EVERY PHASE
+At the end of each phase, give me a concise status report in this exact structure:
+RESEARCHPILOT BUILD STATUS
+
+Current Phase: Phase X — [Phase Name]
+
+Status: COMPLETE / BLOCKED / PARTIALLY COMPLETE
+
+Implemented:
+- ...
+- ...
+- ...
+
+Files Created/Modified:
+- ...
+- ...
+
+Tests:
+- ...
+- ...
+
+Test Result:
+PASS / FAIL
+
+Current Application Status:
+- Running / Not running
+- What currently works
+- What does not work
+
+Required User Action:
+- None
+OR
+- Tell me exactly what I need to configure
+
+Next Phase:
+Phase X+1 — [Name]
+
+STOPPED HERE.
+Waiting for approval to continue.
+Do not proceed beyond the current phase.
+
+PHASE 0 — PROJECT INSPECTION & FOUNDATION
+Before writing substantial code:
+    1. Inspect the Replit workspace.
+    2. Determine whether files already exist.
+    3. Do not unnecessarily overwrite existing useful files.
+    4. Create the initial project structure.
+    5. Configure frontend/backend structure.
+    6. Configure Git.
+    7. Create .gitignore.
+    8. Create .env.example.
+    9. Configure the Replit run command.
+    10. Install only necessary dependencies.
+Expected basic structure:
+researchpilot/
+├── frontend/
+├── backend/
+├── evaluations/
+├── README.md
+├── .gitignore
+└── .env.example
+Verify that:
+    • frontend can start
+    • backend can start
+    • /api/health works
+STOP after Phase 0.
+
+PHASE 1 — BACKEND FOUNDATION
+Build the FastAPI backend foundation.
+Implement:
+backend/
+├── main.py
+├── config.py
+├── models/
+├── services/
+├── agents/
+└── tools/
+Implement:
+GET /api/health
+Add:
+    • configuration management
+    • environment variables
+    • structured error handling
+    • basic logging
+    • Pydantic models
+Test:
+GET /api/health
+Expected response should indicate the backend is healthy.
+Do not build the AI research agent yet.
+STOP after Phase 1.
+
+PHASE 2 — AI PROVIDER
+Implement the AI provider abstraction.
+Create something similar to:
+AIService
+    |
+    └── GeminiProvider
+The exact implementation can differ.
+Requirements:
+    • API key loaded from environment variables
+    • no key in source code
+    • structured model responses
+    • timeout/error handling
+    • provider abstraction
+Create a minimal internal test endpoint or test script that confirms the AI model can respond.
+Do NOT build the full research agent yet.
+If an API key is required:
+Tell me exactly:
+Required Replit Secret:
+GEMINI_API_KEY
+Do not ask me to put the key into source code.
+STOP after Phase 2.
+
+PHASE 3 — RESEARCH PLANNER
+Build the research planning agent.
+Input:
+User research question
+Output structured JSON containing:
+research_goal
+sub_questions
+search_queries
+required_evidence
+Use Pydantic validation.
+Example:
+{
+  "research_goal": "...",
+  "sub_questions": [
+    "...",
+    "..."
+  ],
+  "search_queries": [
+    "...",
+    "..."
+  ],
+  "required_evidence": [
+    "...",
+    "..."
+  ]
+}
+Test it using multiple questions.
+Example:
+Compare the EV markets of India, USA and Germany.
+Verify that the planner generates multiple useful research dimensions.
+STOP after Phase 3.
+
+PHASE 4 — WEB SEARCH TOOL
+Implement the search service.
+Requirements:
+    • multiple queries
+    • result normalization
+    • URL deduplication
+    • configurable maximum results
+    • error handling
+    • timeout handling
+    • retry where appropriate
+    • rate limiting awareness
+Create:
+SearchService
+Do not hard-code the search provider into the agent.
+Verify the current search provider's free-tier availability before implementation.
+If an API key is required, tell me exactly which Replit Secret is required.
+Test:
+Query
+→ Search
+→ Results
+→ Deduplicated sources
+STOP after Phase 4.
+
+PHASE 5 — WEBPAGE EXTRACTION
+Build the webpage reader.
+Input:
+URL
+Output:
+title
+url
+domain
+publication_date
+clean_text
+Use free/open-source libraries.
+Handle:
+    • timeout
+    • HTTP error
+    • blocked pages
+    • malformed HTML
+    • empty content
+    • excessively large pages
+Test against several real webpages.
+One failed page must NOT crash the research process.
+STOP after Phase 5.
+
+PHASE 6 — SOURCE CLASSIFICATION
+Implement source classification.
+Classify sources as:
+Government
+Academic
+International Organization
+Company
+Financial Institution
+News
+Industry Publication
+Blog
+Unknown
+Add a basic quality estimate:
+High
+Medium
+Low
+Unknown
+Do not claim perfect source reliability.
+Test classification using multiple domains.
+STOP after Phase 6.
+
+PHASE 7 — EVIDENCE EXTRACTION
+Implement evidence extraction.
+Input:
+    • source text
+    • research question
+    • research sub-question
+Output structured evidence:
+{
+  "claim": "...",
+  "evidence": "...",
+  "source_url": "...",
+  "source_title": "...",
+  "source_type": "...",
+  "confidence": "high"
+}
+Ensure that extracted claims remain tied to their sources.
+Do not allow fabricated citations.
+Test with several sources.
+STOP after Phase 7.
+
+PHASE 8 — CLAIM ANALYSIS & CONFLICT DETECTION
+Implement claim analysis.
+Identify important factual claims.
+Then compare claims across sources.
+If conflicting information is detected:
+Conflicting Claim
+
+Source A:
+35%
+
+Source B:
+28%
+
+Possible explanation:
+Different methodology / year / assumptions.
+The system should not arbitrarily decide which source is correct.
+Test with deliberately conflicting evidence.
+STOP after Phase 8.
+
+PHASE 9 — SYNTHESIS ENGINE
+Build the report synthesis engine.
+Input:
+    • original question
+    • research plan
+    • sources
+    • evidence
+    • claims
+    • conflicts
+Output:
+A structured research report.
+Minimum structure:
+Executive Summary
+Key Findings
+Detailed Analysis
+Comparison
+Evidence
+Risks / Limitations
+Conclusion
+Sources
+The model must synthesize the evidence rather than merely summarize each webpage independently.
+Ensure factual claims can be traced to sources.
+STOP after Phase 9.
+
+PHASE 10 — COMPLETE RESEARCH PIPELINE
+Now connect the components.
+Implement:
+User Question
+ ↓
+Planner
+ ↓
+Search
+ ↓
+Source Collection
+ ↓
+Web Extraction
+ ↓
+Evidence Extraction
+ ↓
+Claim Analysis
+ ↓
+Conflict Detection
+ ↓
+Synthesis
+ ↓
+Final Report
+Create:
+POST /api/research
+It should accept:
+{
+  "question": "..."
+}
+and produce a research result.
+Implement a research ID.
+Example:
+{
+  "research_id": "abc123",
+  "status": "completed"
+}
+Add appropriate status handling.
+Test the complete backend workflow with real research questions.
+Do NOT build the frontend yet.
+STOP after Phase 10.
+
+PHASE 11 — FRONTEND FOUNDATION
+Now build the React frontend.
+Use:
+    • React
+    • Vite
+    • Tailwind CSS
+    • shadcn/ui
+    • Lucide
+Build:
+/
+with:
+    • ResearchPilot branding
+    • hero section
+    • research input
+    • Start Research button
+    • suggested research categories
+The UI must look like a polished AI SaaS product.
+Do not connect the full backend yet if the UI needs independent development.
+STOP after Phase 11.
+
+PHASE 12 — RESEARCH WORKSPACE UI
+Build the research workspace.
+Show:
+Researching...
+
+✓ Understanding question
+✓ Creating research plan
+✓ Searching web
+● Analyzing sources
+○ Cross-checking claims
+○ Generating report
+Also show:
+Sources analyzed
+Claims extracted
+Research time
+Do not expose private chain-of-thought.
+Only display safe high-level statuses.
+STOP after Phase 12.
+
+PHASE 13 — SOURCE UI
+Build source cards.
+Each source should show:
+    • title
+    • domain
+    • source type
+    • quality estimate
+    • relevant metadata
+    • Open Source button
+Example:
+IEA
+International Energy Agency
+
+Global EV Outlook
+
+International Organization
+High confidence
+
+[ Open Source ↗ ]
+Use real source data.
+STOP after Phase 13.
+
+PHASE 14 — FINAL REPORT UI
+Build the report page.
+Display:
+    • title
+    • executive summary
+    • key findings
+    • analysis
+    • comparisons
+    • risks
+    • conclusion
+    • citations
+    • sources
+Make citations clickable.
+Add useful tables/charts where appropriate.
+Do not invent data merely to make charts.
+STOP after Phase 14.
+
+PHASE 15 — FRONTEND/BACKEND INTEGRATION
+Connect the React frontend to FastAPI.
+Complete flow:
+User
+ ↓
+React
+ ↓
+POST /api/research
+ ↓
+Research Agent
+ ↓
+Backend progress
+ ↓
+React progress UI
+ ↓
+Final Report
+Use polling or Server-Sent Events.
+Choose whichever is simpler and more reliable.
+The user should be able to perform a complete research session through the browser.
+Test the full end-to-end flow.
+STOP after Phase 15.
+
+PHASE 16 — ERROR HANDLING & UX POLISH
+Improve:
+    • loading states
+    • empty states
+    • errors
+    • retry buttons
+    • timeouts
+    • failed sources
+    • insufficient evidence
+    • API failures
+Example:
+Research couldn't be completed.
+
+We weren't able to retrieve enough reliable
+sources for this question.
+
+[ Try Again ]
+Ensure the interface never appears broken or frozen.
+STOP after Phase 16.
+
+PHASE 17 — RATE LIMITING
+Implement basic rate limiting.
+Protect:
+    • research endpoint
+    • search operations
+    • AI calls
+Make limits configurable through environment variables.
+Example:
+MAX_RESEARCH_PER_HOUR
+MAX_SOURCES_PER_RESEARCH
+MAX_SEARCHES_PER_RESEARCH
+MAX_RESEARCH_TIME
+Do not create settings that encourage unnecessary API consumption.
+Test that excessive requests are rejected correctly.
+STOP after Phase 17.
+
+PHASE 18 — ANALYTICS
+Implement anonymous usage analytics.
+Track:
+visitor_started
+research_started
+search_completed
+source_opened
+report_generated
+research_failed
+Track:
+    • total visitors
+    • unique visitors
+    • research sessions
+    • reports generated
+    • daily usage
+    • weekly usage
+    • monthly usage
+    • average research time
+    • average sources/research
+    • success rate
+    • failure rate
+    • popular categories
+Do not collect unnecessary personal information.
+Do not make analytics public.
+STOP after Phase 18.
+
+PHASE 19 — ADMIN AUTHENTICATION
+Implement secure admin authentication.
+Create:
+/admin/login
+/admin
+Admin credentials must come from Replit Secrets/environment variables.
+Never hard-code credentials.
+Protect the analytics API.
+Verify:
+Normal user → cannot access /admin
+Admin → can access /admin
+STOP after Phase 19.
+
+PHASE 20 — ADMIN ANALYTICS DASHBOARD
+Create a polished admin dashboard.
+Show:
+ResearchPilot Admin
+
+Total Visitors
+Unique Visitors
+Research Sessions
+Reports Generated
+
+Today
+This Week
+This Month
+
+Average Research Time
+Average Sources
+Success Rate
+Failure Rate
+Add charts where useful using Recharts.
+Show popular research categories.
+Use real collected analytics.
+Do not use hard-coded example numbers.
+STOP after Phase 20.
+
+PHASE 21 — EVALUATION FRAMEWORK
+Create:
+evaluations/
+├── test_cases.json
+└── evaluate.py
+Create several research test cases.
+Evaluate:
+    • source coverage
+    • citation correctness
+    • completeness
+    • factual consistency
+    • retrieval quality
+    • conflict detection
+    • latency
+    • failure rate
+Run the evaluation.
+Document the results.
+STOP after Phase 21.
+
+PHASE 22 — SECURITY REVIEW
+Perform a security review.
+Check:
+    • secrets
+    • authentication
+    • authorization
+    • API endpoints
+    • input validation
+    • rate limiting
+    • SSRF risk
+    • URL fetching
+    • request size limits
+    • response size limits
+    • logging
+    • XSS risks
+    • exposed credentials
+Fix critical issues.
+Do not allow the webpage reader to become an unrestricted internal network proxy.
+STOP after Phase 22.
+
+PHASE 23 — PERFORMANCE REVIEW
+Review:
+    • unnecessary AI calls
+    • duplicate searches
+    • duplicate URLs
+    • excessive source retrieval
+    • unnecessary webpage requests
+    • slow operations
+Add reasonable:
+    • caching where safe
+    • deduplication
+    • limited concurrency
+    • timeouts
+    • retries
+Do not over-engineer.
+STOP after Phase 23.
+
+PHASE 24 — UI/UX FINAL POLISH
+Perform a complete visual review.
+Check:
+    • desktop
+    • laptop
+    • tablet
+    • mobile
+    • typography
+    • spacing
+    • buttons
+    • cards
+    • animations
+    • loading states
+    • empty states
+    • error states
+    • accessibility
+    • responsive layout
+The application should look like a serious AI SaaS product.
+Do not copy another company's branding.
+STOP after Phase 24.
+
+PHASE 25 — PRODUCTION CONFIGURATION
+Prepare for Replit deployment.
+Verify:
+    • production frontend build
+    • backend start command
+    • environment variables
+    • Replit Secrets
+    • API configuration
+    • CORS
+    • frontend/backend routing
+    • static asset handling
+Run a production-style test.
+STOP after Phase 25.
+
+PHASE 26 — DEPLOYMENT
+Deploy ResearchPilot to Replit.
+Verify:
+    1. Public URL loads.
+    2. Landing page works.
+    3. Research submission works.
+    4. Agent performs research.
+    5. Sources appear.
+    6. Final report appears.
+    7. Citations work.
+    8. Errors work.
+    9. Admin login works.
+    10. Admin analytics work.
+Do not mark deployment complete until the public application has been tested.
+STOP after Phase 26.
+
+PHASE 27 — FINAL DOCUMENTATION
+Complete:
+README.md
+Include:
+    • project description
+    • features
+    • architecture
+    • research pipeline
+    • tech stack
+    • setup
+    • environment variables
+    • deployment
+    • free-tier model
+    • limitations
+    • evaluation
+    • security
+    • analytics
+    • screenshots
+    • live demo URL
+Clearly state:
+ResearchPilot is designed to operate using free/open-source resources and available free tiers for the MVP. External API and hosting quotas apply; free usage is not unlimited.
+STOP after Phase 27.
+
+PHASE 28 — FINAL AUDIT
+Perform a complete audit.
+Check every requirement from the original ResearchPilot specification.
+Create a final checklist:
+RESEARCHPILOT FINAL AUDIT
+
+Core research:
+[ ] Planner
+[ ] Search
+[ ] Web extraction
+[ ] Evidence extraction
+[ ] Claim analysis
+[ ] Conflict detection
+[ ] Synthesis
+[ ] Citations
+
+Frontend:
+[ ] Landing page
+[ ] Research interface
+[ ] Progress UI
+[ ] Source cards
+[ ] Report UI
+[ ] Responsive design
+
+Production:
+[ ] Error handling
+[ ] Rate limiting
+[ ] Security
+[ ] Analytics
+[ ] Admin authentication
+[ ] Admin dashboard
+[ ] Evaluation
+[ ] Logging
+[ ] Deployment
+
+Portfolio:
+[ ] README
+[ ] Architecture diagram
+[ ] Evaluation results
+[ ] Live URL
+[ ] Screenshots
+Fix any critical problems you discover.
+Then STOP.
+
+CRITICAL EXECUTION RULE
+NEVER automatically jump from one phase to another.
+For example:
+After Phase 4:
+Phase 4 complete.
+STOPPED HERE.
+Do NOT continue to Phase 5 unless I explicitly tell you:
+Continue to Phase 5.
+If I say:
+Continue
+then continue with the next incomplete phase.
+If I say:
+Fix Phase 4
+then remain in Phase 4 and fix it.
+If I say:
+Show me the current status
+report the current phase and implementation state without starting new work.
+
+IF A PHASE IS BLOCKED
+Do not skip the phase.
+Report:
+STATUS: BLOCKED
+
+Problem:
+...
+
+Why:
+...
+
+Required action from me:
+...
+
+Possible solution:
+...
+Wait for my response.
+Do not silently replace an important dependency with a paid service.
+
+IF AN API KEY IS REQUIRED
+Tell me exactly:
+REQUIRED REPLIT SECRET
+
+Name:
+GEMINI_API_KEY
+
+Where:
+Replit → Secrets
+
+Value:
+[my API key]
+Never ask me to put API keys directly inside source code.
+
+IF A FREE SERVICE HAS CHANGED
+Before using an external service, verify its current pricing/free tier.
+If it is no longer free:
+    1. Tell me.
+    2. Find a legitimate free/open-source alternative if possible.
+    3. Do not introduce paid usage without my approval.
+
+FINAL RULE
+You are not being asked to finish the entire application in one response.
+You are being asked to act as a controlled software-development agent.
+ONE PHASE → IMPLEMENT → TEST → REPORT → STOP.
+Always tell me exactly:
+"Current Phase: X"
+and:
+"Next Phase: Y"
+at the end of your work.
+Do not proceed until I explicitly authorize the next phase.
+
+
+
+
+PORTABILITY, ACCOUNT INDEPENDENCE & CONTINUATION REQUIREMENTS
+ResearchPilot MUST be designed so development can continue if the current Replit account runs out of Agent credits, reaches usage limits, or becomes unavailable.
+The Replit account MUST NOT be treated as the source of truth for the project.
+1. Source of Truth
+The complete project source code must exist in the repository and must be runnable independently of Replit Agent.
+Do not keep critical architecture, implementation details, configuration, TODOs, or project state only inside the Replit Agent conversation.
+The GitHub repository must contain everything required to understand, run, test, and continue the project.
+2. GitHub Portability
+Configure the project so it can be pushed to GitHub and later imported/cloned into:
+    • another Replit account
+    • another Replit workspace
+    • a local development machine
+    • another compatible hosting platform
+Do not introduce unnecessary Replit-specific dependencies.
+3. Environment Variables and Secrets
+All credentials and environment-specific configuration MUST use environment variables.
+At minimum support:
+    • GEMINI_API_KEY
+    • SEARCH_API_KEY
+    • ADMIN credentials/configuration
+    • application environment configuration
+    • frontend/backend URLs where required
+Never hard-code API keys, passwords, tokens, or secrets.
+Create and maintain:
+.env.example
+The .env.example file must contain variable names, safe placeholder values, and comments explaining where each value comes from.
+Never commit real secrets to GitHub.
+4. Setup Documentation
+Maintain a complete README.md containing:
+    • Project overview
+    • Architecture
+    • Folder structure
+    • Prerequisites
+    • Installation instructions
+    • Environment variable configuration
+    • Gemini API setup
+    • Search API setup
+    • Local development instructions
+    • Backend startup instructions
+    • Frontend startup instructions
+    • Testing instructions
+    • Deployment instructions
+    • GitHub workflow
+    • How to import the project into a new Replit account
+    • How to configure Secrets on a new Replit account
+    • How to resume development after switching accounts
+    • How to replace AI/search providers
+    • Troubleshooting
+A developer who has never seen the project should be able to clone the repository and understand how to run and continue it.
+5. Build State Tracking
+Create:
+BUILD_STATUS.md
+After every completed phase, update this file with:
+    • Current phase
+    • Completed phases
+    • Current implementation status
+    • Files added/modified
+    • Tests completed
+    • Known issues
+    • Required environment variables
+    • Next phase
+    • Any remaining work
+This file must represent the actual project state and must never contain fabricated completion claims.
+6. Phase Recovery
+Each phase must be implemented so that another developer or another Replit account can determine exactly where development stopped.
+If development stops unexpectedly because of:
+    • Replit Agent credit exhaustion
+    • Replit usage limits
+    • session interruption
+    • account change
+    • deployment interruption
+    • API quota exhaustion
+the project must remain in a recoverable state.
+Do NOT restart the project from scratch.
+Inspect:
+    • BUILD_STATUS.md
+    • README.md
+    • existing source code
+    • tests
+    • TODOs
+    • git history
+Then continue from the last genuinely completed phase.
+7. Provider Independence
+Do not tightly couple the application to a single AI provider.
+Create a service abstraction such as:
+backend/services/ai_service.py
+The research pipeline should communicate with the AI service through a stable internal interface.
+This should allow Gemini to be replaced later by another compatible provider without rewriting the entire research pipeline.
+Similarly, isolate web search functionality behind:
+backend/services/search_service.py
+so the search provider can be replaced later.
+8. No Replit-Credit Dependency
+Replit Agent credits are a DEVELOPMENT RESOURCE, not an APPLICATION DEPENDENCY.
+ResearchPilot itself must not require Replit Agent to function.
+Once deployed, users should be able to use ResearchPilot without Replit Agent running.
+9. Git Checkpoints
+At the end of every major phase:
+    • ensure the application builds
+    • run relevant tests
+    • ensure no secrets are committed
+    • update BUILD_STATUS.md
+    • update README.md if necessary
+    • create a clear git commit
+Use descriptive commit messages such as:
+phase-01-backend-foundation
+phase-02-ai-provider
+phase-03-research-planner
+etc.
+10. Continuation Rule
+If I move ResearchPilot to another Replit account, do NOT assume that previous Agent conversation history exists.
+Treat the repository as the authoritative project state.
+Before continuing development:
+    1. Inspect the existing repository.
+    2. Read BUILD_STATUS.md.
+    3. Read README.md.
+    4. Inspect the current implementation.
+    5. Run the relevant tests.
+    6. Determine the last genuinely completed phase.
+    7. Continue from that point.
+Never rebuild completed functionality unnecessarily.
+11. Final Portability Test
+Before declaring the project production-ready, verify that the project can theoretically be transferred to a fresh environment using only:
+    • GitHub repository
+    • environment variables/secrets
+    • documented setup instructions
+The project must not depend on hidden Replit Agent context.
+IMPORTANT
+The goal is that I can lose access to my current Replit Agent credits tomorrow, open another Replit account, import the same GitHub repository, add the required API keys as Secrets, and continue development from the exact point where development stopped.
