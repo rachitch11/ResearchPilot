@@ -1,20 +1,20 @@
-# [Project name]
+# ResearchPilot
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+ResearchPilot is an AI-powered research workspace that will find, verify, and explain evidence behind complex questions.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server
+- `pnpm --filter @workspace/researchpilot run dev` — run the ResearchPilot frontend
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- `cat BUILD_STATUS.md` — inspect the current phased build checkpoint
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
+- API: Express 5 (foundation service; research-specific routes are added in later phases)
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
 - API codegen: Orval (from OpenAPI spec)
@@ -22,23 +22,31 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/researchpilot/` — React + Vite frontend and product UI
+- `artifacts/api-server/` — shared API server and routes
+- `lib/api-spec/openapi.yaml` — API contract source of truth
+- `lib/api-client-react/` — generated React Query client
+- `lib/api-zod/` — generated server validation schemas
+- `BUILD_STATUS.md` — phase checkpoint and continuation state
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The project is built one phase at a time so each checkpoint remains runnable and recoverable.
+- OpenAPI remains the source of truth for shared API contracts.
+- Phase 0 intentionally uses no database or external provider.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The finished product will turn complex questions into structured, source-backed research reports with visible high-level progress, citations, uncertainty, and private aggregate analytics.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The user asked for controlled one-phase-at-a-time delivery with a status report and an explicit stop after each phase.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Keep `.env` and provider credentials out of Git; use `.env.example` for safe configuration documentation.
+- Run API code generation after every OpenAPI change.
 
 ## Pointers
 
