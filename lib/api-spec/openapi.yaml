@@ -16,6 +16,8 @@ tags:
     description: Research planning operations
   - name: search
     description: Web search operations
+  - name: webpage
+    description: Webpage extraction operations
 paths:
   /healthz:
     get:
@@ -163,6 +165,49 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "503":
           description: Search provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /webpage/read:
+    post:
+      operationId: readWebpage
+      tags: [webpage]
+      summary: Read a webpage
+      description: Retrieves a bounded public HTML page and extracts readable text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReadWebpageRequest"
+      responses:
+        "200":
+          description: Extracted webpage
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebpageDocument"
+        "400":
+          description: Invalid webpage URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "413":
+          description: Webpage exceeds configured size limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Webpage does not contain readable text
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Webpage retrieval failure
           content:
             application/json:
               schema:
@@ -368,6 +413,33 @@ components:
         - snippet
         - domain
         - sourceQuery
+    ReadWebpageRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 8
+          maxLength: 2048
+      required:
+        - url
+    WebpageDocument:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        domain:
+          type: string
+        publicationDate:
+          type: string
+        cleanText:
+          type: string
+      required:
+        - title
+        - url
+        - domain
+        - cleanText
     ErrorResponse:
       type: object
       properties:

@@ -2,7 +2,7 @@
 
 ResearchPilot is an AI-powered research workspace designed to find, verify, and explain evidence behind complex questions.
 
-This repository is being built in controlled phases. The current checkpoint is **Phase 4 — Web Search**: ResearchPilot can validate a question, produce a structured planning outline, and query a provider-independent search service that normalizes and deduplicates results.
+This repository is being built in controlled phases. The current checkpoint is **Phase 5 — Webpage Extraction**: ResearchPilot can validate a question, produce a structured planning outline, query a provider-independent search service, and safely extract readable text from public HTML pages.
 
 ## Run locally
 
@@ -34,6 +34,7 @@ The Replit-managed workflows provide the required `PORT` and `BASE_PATH` values.
 - `/api/health`
 - `/api/healthz`
 - `/api/search`
+- `/api/webpage/read`
 
 ## Project map
 
@@ -50,7 +51,7 @@ BUILD_STATUS.md       # Recoverable phase-by-phase project state
 
 ## Environment variables
 
-Use `.env.example` as the safe template. Do not commit `.env` or provider credentials. The Gemini and Brave Search API keys are stored through the workspace secret manager. Provider credentials are used server-side and never returned or logged.
+Use `.env.example` as the safe template. Do not commit `.env` or provider credentials. The Gemini and Brave Search API keys are stored through the workspace secret manager. Provider credentials are used server-side and never returned or logged. Webpage reads are bounded by timeout and response-size settings.
 
 ## Architecture direction
 
@@ -69,4 +70,4 @@ If work resumes in a new environment, read `BUILD_STATUS.md`, then inspect the e
 
 ## Cost and limitations
 
-ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 4 build makes external Gemini calls through the provider verification and research planning routes, and supports Brave Search through `SEARCH_API_KEY`.
+ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 5 build makes external Gemini calls through the provider verification and research planning routes, supports Brave Search through `SEARCH_API_KEY`, and extracts public HTML without requiring a separate scraping service.

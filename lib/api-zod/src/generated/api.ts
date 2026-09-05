@@ -159,3 +159,25 @@ export const SearchWebResponse = zod.object({
 })
 
 
+/**
+ * Retrieves a bounded public HTML page and extracts readable text
+ * @summary Read a webpage
+ */
+export const readWebpageBodyUrlMin = 8;
+export const readWebpageBodyUrlMax = 2048;
+
+
+
+export const ReadWebpageBody = zod.object({
+  "url": zod.string().min(readWebpageBodyUrlMin).max(readWebpageBodyUrlMax)
+})
+
+export const ReadWebpageResponse = zod.object({
+  "title": zod.string(),
+  "url": zod.string(),
+  "domain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "cleanText": zod.string()
+})
+
+

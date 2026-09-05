@@ -25,10 +25,12 @@ import type {
   AiTestResponse,
   ErrorResponse,
   HealthStatus,
+  ReadWebpageRequest,
   ResearchPlan,
   ResearchPlanInput,
   SearchRequest,
-  SearchResponse
+  SearchResponse,
+  WebpageDocument
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -506,5 +508,77 @@ export const useSearchWeb = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getSearchWebMutationOptions(options));
+    }
+
+export const getReadWebpageUrl = () => {
+
+
+
+
+  return `/api/webpage/read`
+}
+
+/**
+ * Retrieves a bounded public HTML page and extracts readable text
+ * @summary Read a webpage
+ */
+export const readWebpage = async (readWebpageRequest: ReadWebpageRequest, options?: Parameters<typeof customFetch>[1]): Promise<WebpageDocument> => {
+
+  return customFetch<WebpageDocument>(getReadWebpageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(readWebpageRequest)
+  }
+);}
+
+
+
+
+
+export const getReadWebpageMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof readWebpage>>, TError,{data: BodyType<ReadWebpageRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof readWebpage>>, TError,{data: BodyType<ReadWebpageRequest>}, TContext> => {
+
+const mutationKey = ['readWebpage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof readWebpage>>, {data: BodyType<ReadWebpageRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  readWebpage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReadWebpageMutationResult = NonNullable<Awaited<ReturnType<typeof readWebpage>>>
+    export type ReadWebpageMutationBody = BodyType<ReadWebpageRequest>
+    export type ReadWebpageMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Read a webpage
+ */
+export const useReadWebpage = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof readWebpage>>, TError,{data: BodyType<ReadWebpageRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof readWebpage>>,
+        TError,
+        {data: BodyType<ReadWebpageRequest>},
+        TContext
+      > => {
+      return useMutation(getReadWebpageMutationOptions(options));
     }
 

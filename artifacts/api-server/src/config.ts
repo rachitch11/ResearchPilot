@@ -9,6 +9,8 @@ const DEFAULTS = {
   searchProvider: "brave",
   searchRequestTimeoutMs: 15_000,
   maxResultsPerQuery: 5,
+  webpageRequestTimeoutMs: 15_000,
+  maxPageBytes: 2_000_000,
   requestBodyLimit: "32kb",
 } as const;
 
@@ -53,6 +55,16 @@ export const config = {
     "MAX_RESULTS_PER_QUERY",
     DEFAULTS.maxResultsPerQuery,
     20,
+  ),
+  webpageRequestTimeoutMs: readPositiveInteger(
+    "WEBPAGE_REQUEST_TIMEOUT_MS",
+    DEFAULTS.webpageRequestTimeoutMs,
+    60_000,
+  ),
+  maxPageBytes: readPositiveInteger(
+    "MAX_PAGE_BYTES",
+    DEFAULTS.maxPageBytes,
+    10_000_000,
   ),
   requestBodyLimit: process.env.REQUEST_BODY_LIMIT ?? DEFAULTS.requestBodyLimit,
   maxResearchPerHour: readPositiveInteger(

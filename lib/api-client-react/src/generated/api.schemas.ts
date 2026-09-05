@@ -121,6 +121,22 @@ export interface SearchResponse {
   deduplicatedResults: number;
 }
 
+export interface ReadWebpageRequest {
+  /**
+     * @minLength 8
+     * @maxLength 2048
+     */
+  url: string;
+}
+
+export interface WebpageDocument {
+  title: string;
+  url: string;
+  domain: string;
+  publicationDate?: string;
+  cleanText: string;
+}
+
 export interface ErrorResponse {
   error: string;
   requestId?: string;
