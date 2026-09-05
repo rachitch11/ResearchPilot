@@ -2,25 +2,28 @@
 
 ## Current phase
 
-**Phase 3 — Research Planner**
+**Phase 4 — Web Search**
 
 ## Completed phases
 
 - Phase 0 — Project Inspection & Foundation
 - Phase 1 — Backend Foundation
 - Phase 2 — AI Provider
+- Phase 3 — Research Planner
 
 ## Current implementation status
 
 - The project has a deployable React + Vite frontend artifact at the root route.
 - The existing API service now has centralized runtime configuration, request limits, CORS configuration, structured request logging, typed API error responses, and a final error boundary.
 - The health contract is available at `/api/healthz` and `/api/health`.
-- Search, research orchestration, analytics, authentication, and evaluation are intentionally not implemented yet.
+- Research orchestration, source extraction, evidence, analytics, authentication, and evaluation are intentionally not implemented yet.
 - The AI provider abstraction supports a Gemini adapter with a minimal prompt test route.
 - `GET /api/ai/status` reports provider/model/configuration status without exposing credentials.
 - `POST /api/ai/test` validates a bounded prompt and returns a provider response.
 - `POST /api/research/plan` decomposes a validated question into typed sub-questions, search queries, constraints, and assumptions.
 - Planner output is requested as JSON and validated against the generated API schema before it is returned.
+- `POST /api/search` accepts bounded search intents, queries Brave Search, normalizes result metadata, removes duplicate URLs, and enforces source limits.
+- The search provider is isolated behind a provider interface so another search backend can replace Brave without changing the route or future pipeline.
 
 ## Files added or modified
 
@@ -48,14 +51,16 @@
 - API provider status verification
 - Gemini provider response verification using the securely stored secret
 - Research planner input validation and live structured-plan verification
+- Search request validation, URL normalization, and duplicate-result handling
+- API startup and search-provider configuration handling
 
 ## Test result
 
-PASS. The full workspace typecheck passes, the API bundle builds, a live planning request returns a schema-valid structured plan, invalid short questions return 400, and the health route remains green.
+PARTIAL. The Phase 3 planner checks remain passing, and the Phase 4 search layer builds with validation and deduplication coverage. Live Brave Search verification is blocked until `SEARCH_API_KEY` is configured.
 
 ## Known issues
 
-- Search, source extraction, evidence, synthesis, and the rest of the research pipeline are not available until later approved phases.
+- Source extraction, evidence, synthesis, and the rest of the research pipeline are not available until later approved phases.
 - Gemini is selected for the first adapter and is configured through the workspace secret `GEMINI_API_KEY`.
 - No database is required for the Phase 2 provider verification.
 - The backend foundation uses the existing TypeScript/Express service scaffold; provider-specific and research-specific modules remain unimplemented.
@@ -63,7 +68,8 @@ PASS. The full workspace typecheck passes, the API bundle builds, a live plannin
 ## Required environment variables
 
 - `GEMINI_API_KEY` is required for the AI test route. It is stored through the workspace secret manager and is never logged or returned.
+- `SEARCH_API_KEY` is required for live `/api/search` requests. It must be stored through the workspace secret manager and is never logged or returned.
 
 ## Next phase
 
-Phase 4 — Search Provider
+Phase 5 — Webpage Extraction

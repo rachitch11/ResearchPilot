@@ -6,6 +6,9 @@ const DEFAULTS = {
   aiProvider: "gemini",
   geminiModel: "gemini-3.6-flash",
   aiRequestTimeoutMs: 30_000,
+  searchProvider: "brave",
+  searchRequestTimeoutMs: 15_000,
+  maxResultsPerQuery: 5,
   requestBodyLimit: "32kb",
 } as const;
 
@@ -39,6 +42,17 @@ export const config = {
   aiRequestTimeoutMs: readPositiveInteger(
     "AI_REQUEST_TIMEOUT_MS",
     DEFAULTS.aiRequestTimeoutMs,
+  ),
+  searchProvider: process.env.SEARCH_PROVIDER ?? DEFAULTS.searchProvider,
+  searchRequestTimeoutMs: readPositiveInteger(
+    "SEARCH_REQUEST_TIMEOUT_MS",
+    DEFAULTS.searchRequestTimeoutMs,
+    60_000,
+  ),
+  maxResultsPerQuery: readPositiveInteger(
+    "MAX_RESULTS_PER_QUERY",
+    DEFAULTS.maxResultsPerQuery,
+    20,
   ),
   requestBodyLimit: process.env.REQUEST_BODY_LIMIT ?? DEFAULTS.requestBodyLimit,
   maxResearchPerHour: readPositiveInteger(

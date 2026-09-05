@@ -15,3 +15,7 @@ export * from './researchPlan';
 export * from './researchPlanInput';
 export * from './researchSearchQuery';
 export * from './researchSubQuestion';
+export * from './searchIntent';
+export * from './searchRequest';
+export * from './searchResponse';
+export * from './searchResult';

@@ -14,6 +14,8 @@ tags:
     description: AI provider operations
   - name: research
     description: Research planning operations
+  - name: search
+    description: Web search operations
 paths:
   /healthz:
     get:
@@ -124,6 +126,43 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "503":
           description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /search:
+    post:
+      operationId: searchWeb
+      tags: [search]
+      summary: Search the web
+      description: Runs bounded search intents and returns normalized, deduplicated results
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+      responses:
+        "200":
+          description: Normalized search results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResponse"
+        "400":
+          description: Invalid search request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Search provider failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: Search provider is not configured
           content:
             application/json:
               schema:
@@ -252,6 +291,83 @@ components:
       required:
         - query
         - purpose
+    SearchRequest:
+      type: object
+      properties:
+        queries:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/SearchIntent"
+        maxResults:
+          type: number
+          minimum: 1
+          maximum: 20
+          default: 5
+      required:
+        - queries
+    SearchIntent:
+      type: object
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 500
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - query
+    SearchResponse:
+      type: object
+      properties:
+        provider:
+          type: string
+        queries:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchIntent"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchResult"
+        totalResults:
+          type: number
+          minimum: 0
+        deduplicatedResults:
+          type: number
+          minimum: 0
+      required:
+        - provider
+        - queries
+        - results
+        - totalResults
+        - deduplicatedResults
+    SearchResult:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        snippet:
+          type: string
+        publishedDate:
+          type: string
+        domain:
+          type: string
+        sourceQuery:
+          type: string
+        purpose:
+          type: string
+      required:
+        - title
+        - url
+        - snippet
+        - domain
+        - sourceQuery
     ErrorResponse:
       type: object
       properties:

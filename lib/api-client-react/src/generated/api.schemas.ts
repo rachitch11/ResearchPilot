@@ -75,6 +75,52 @@ export interface ResearchPlan {
   model: string;
 }
 
+export interface SearchIntent {
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  query: string;
+  /**
+     * @minLength 1
+     * @maxLength 500
+     */
+  purpose?: string;
+}
+
+export interface SearchRequest {
+  /**
+     * @minItems 1
+     * @maxItems 8
+     */
+  queries: SearchIntent[];
+  /**
+     * @minimum 1
+     * @maximum 20
+     */
+  maxResults?: number;
+}
+
+export interface SearchResult {
+  title: string;
+  url: string;
+  snippet: string;
+  publishedDate?: string;
+  domain: string;
+  sourceQuery: string;
+  purpose?: string;
+}
+
+export interface SearchResponse {
+  provider: string;
+  queries: SearchIntent[];
+  results: SearchResult[];
+  /** @minimum 0 */
+  totalResults: number;
+  /** @minimum 0 */
+  deduplicatedResults: number;
+}
+
 export interface ErrorResponse {
   error: string;
   requestId?: string;

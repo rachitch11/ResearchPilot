@@ -26,7 +26,9 @@ import type {
   ErrorResponse,
   HealthStatus,
   ResearchPlan,
-  ResearchPlanInput
+  ResearchPlanInput,
+  SearchRequest,
+  SearchResponse
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -432,5 +434,77 @@ export const useCreateResearchPlan = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getCreateResearchPlanMutationOptions(options));
+    }
+
+export const getSearchWebUrl = () => {
+
+
+
+
+  return `/api/search`
+}
+
+/**
+ * Runs bounded search intents and returns normalized, deduplicated results
+ * @summary Search the web
+ */
+export const searchWeb = async (searchRequest: SearchRequest, options?: Parameters<typeof customFetch>[1]): Promise<SearchResponse> => {
+
+  return customFetch<SearchResponse>(getSearchWebUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(searchRequest)
+  }
+);}
+
+
+
+
+
+export const getSearchWebMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchWeb>>, TError,{data: BodyType<SearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof searchWeb>>, TError,{data: BodyType<SearchRequest>}, TContext> => {
+
+const mutationKey = ['searchWeb'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof searchWeb>>, {data: BodyType<SearchRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  searchWeb(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SearchWebMutationResult = NonNullable<Awaited<ReturnType<typeof searchWeb>>>
+    export type SearchWebMutationBody = BodyType<SearchRequest>
+    export type SearchWebMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Search the web
+ */
+export const useSearchWeb = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof searchWeb>>, TError,{data: BodyType<SearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof searchWeb>>,
+        TError,
+        {data: BodyType<SearchRequest>},
+        TContext
+      > => {
+      return useMutation(getSearchWebMutationOptions(options));
     }
 

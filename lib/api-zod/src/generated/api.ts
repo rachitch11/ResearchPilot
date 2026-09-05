@@ -106,3 +106,56 @@ export const CreateResearchPlanResponse = zod.object({
 })
 
 
+/**
+ * Runs bounded search intents and returns normalized, deduplicated results
+ * @summary Search the web
+ */
+export const searchWebBodyQueriesItemQueryMax = 500;
+
+export const searchWebBodyQueriesItemPurposeMax = 500;
+
+export const searchWebBodyQueriesMax = 8;
+
+export const searchWebBodyMaxResultsDefault = 5;
+export const searchWebBodyMaxResultsMax = 20;
+
+
+
+export const SearchWebBody = zod.object({
+  "queries": zod.array(zod.object({
+  "query": zod.string().min(1).max(searchWebBodyQueriesItemQueryMax),
+  "purpose": zod.string().min(1).max(searchWebBodyQueriesItemPurposeMax).optional()
+})).min(1).max(searchWebBodyQueriesMax),
+  "maxResults": zod.number().min(1).max(searchWebBodyMaxResultsMax).default(searchWebBodyMaxResultsDefault)
+})
+
+export const searchWebResponseQueriesItemQueryMax = 500;
+
+export const searchWebResponseQueriesItemPurposeMax = 500;
+
+export const searchWebResponseTotalResultsMin = 0;
+
+export const searchWebResponseDeduplicatedResultsMin = 0;
+
+
+
+export const SearchWebResponse = zod.object({
+  "provider": zod.string(),
+  "queries": zod.array(zod.object({
+  "query": zod.string().min(1).max(searchWebResponseQueriesItemQueryMax),
+  "purpose": zod.string().min(1).max(searchWebResponseQueriesItemPurposeMax).optional()
+})),
+  "results": zod.array(zod.object({
+  "title": zod.string(),
+  "url": zod.string(),
+  "snippet": zod.string(),
+  "publishedDate": zod.string().optional(),
+  "domain": zod.string(),
+  "sourceQuery": zod.string(),
+  "purpose": zod.string().optional()
+})),
+  "totalResults": zod.number().min(searchWebResponseTotalResultsMin),
+  "deduplicatedResults": zod.number().min(searchWebResponseDeduplicatedResultsMin)
+})
+
+
