@@ -181,3 +181,35 @@ export const ReadWebpageResponse = zod.object({
 })
 
 
+/**
+ * Assigns heuristic source types and quality estimates from source domains
+ * @summary Classify sources
+ */
+export const classifySourcesBodySourcesItemUrlMin = 8;
+export const classifySourcesBodySourcesItemUrlMax = 2048;
+
+export const classifySourcesBodySourcesItemTitleMax = 500;
+
+export const classifySourcesBodySourcesMax = 20;
+
+
+
+export const ClassifySourcesBody = zod.object({
+  "sources": zod.array(zod.object({
+  "url": zod.string().min(classifySourcesBodySourcesItemUrlMin).max(classifySourcesBodySourcesItemUrlMax),
+  "title": zod.string().max(classifySourcesBodySourcesItemTitleMax).optional()
+})).min(1).max(classifySourcesBodySourcesMax)
+})
+
+export const ClassifySourcesResponse = zod.object({
+  "sources": zod.array(zod.object({
+  "url": zod.string(),
+  "domain": zod.string(),
+  "title": zod.string().optional(),
+  "sourceType": zod.string(),
+  "quality": zod.string(),
+  "signals": zod.array(zod.string())
+}))
+})
+
+

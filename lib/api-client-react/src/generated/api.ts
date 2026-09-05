@@ -23,6 +23,8 @@ import type {
   AiProviderStatus,
   AiTestInput,
   AiTestResponse,
+  ClassifiedSourceCollection,
+  ClassifySourcesRequest,
   ErrorResponse,
   HealthStatus,
   ReadWebpageRequest,
@@ -580,5 +582,77 @@ export const useReadWebpage = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getReadWebpageMutationOptions(options));
+    }
+
+export const getClassifySourcesUrl = () => {
+
+
+
+
+  return `/api/sources/classify`
+}
+
+/**
+ * Assigns heuristic source types and quality estimates from source domains
+ * @summary Classify sources
+ */
+export const classifySources = async (classifySourcesRequest: ClassifySourcesRequest, options?: Parameters<typeof customFetch>[1]): Promise<ClassifiedSourceCollection> => {
+
+  return customFetch<ClassifiedSourceCollection>(getClassifySourcesUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(classifySourcesRequest)
+  }
+);}
+
+
+
+
+
+export const getClassifySourcesMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof classifySources>>, TError,{data: BodyType<ClassifySourcesRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof classifySources>>, TError,{data: BodyType<ClassifySourcesRequest>}, TContext> => {
+
+const mutationKey = ['classifySources'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof classifySources>>, {data: BodyType<ClassifySourcesRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  classifySources(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClassifySourcesMutationResult = NonNullable<Awaited<ReturnType<typeof classifySources>>>
+    export type ClassifySourcesMutationBody = BodyType<ClassifySourcesRequest>
+    export type ClassifySourcesMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Classify sources
+ */
+export const useClassifySources = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof classifySources>>, TError,{data: BodyType<ClassifySourcesRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof classifySources>>,
+        TError,
+        {data: BodyType<ClassifySourcesRequest>},
+        TContext
+      > => {
+      return useMutation(getClassifySourcesMutationOptions(options));
     }
 

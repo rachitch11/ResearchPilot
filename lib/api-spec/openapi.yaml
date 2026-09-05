@@ -18,6 +18,8 @@ tags:
     description: Web search operations
   - name: webpage
     description: Webpage extraction operations
+  - name: sources
+    description: Source classification operations
 paths:
   /healthz:
     get:
@@ -208,6 +210,31 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "502":
           description: Webpage retrieval failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /sources/classify:
+    post:
+      operationId: classifySources
+      tags: [sources]
+      summary: Classify sources
+      description: Assigns heuristic source types and quality estimates from source domains
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClassifySourcesRequest"
+      responses:
+        "200":
+          description: Classified sources
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassifiedSourceCollection"
+        "400":
+          description: Invalid source input
           content:
             application/json:
               schema:
@@ -440,6 +467,61 @@ components:
         - url
         - domain
         - cleanText
+    ClassifySourcesRequest:
+      type: object
+      properties:
+        sources:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/SourceInput"
+      required:
+        - sources
+    SourceInput:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 8
+          maxLength: 2048
+        title:
+          type: string
+          maxLength: 500
+      required:
+        - url
+    ClassifiedSourceCollection:
+      type: object
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceClassification"
+      required:
+        - sources
+    SourceClassification:
+      type: object
+      properties:
+        url:
+          type: string
+        domain:
+          type: string
+        title:
+          type: string
+        sourceType:
+          type: string
+        quality:
+          type: string
+        signals:
+          type: array
+          items:
+            type: string
+      required:
+        - url
+        - domain
+        - sourceType
+        - quality
+        - signals
     ErrorResponse:
       type: object
       properties:

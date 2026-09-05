@@ -137,6 +137,37 @@ export interface WebpageDocument {
   cleanText: string;
 }
 
+export interface SourceInput {
+  /**
+     * @minLength 8
+     * @maxLength 2048
+     */
+  url: string;
+  /** @maxLength 500 */
+  title?: string;
+}
+
+export interface ClassifySourcesRequest {
+  /**
+     * @minItems 1
+     * @maxItems 20
+     */
+  sources: SourceInput[];
+}
+
+export interface SourceClassification {
+  url: string;
+  domain: string;
+  title?: string;
+  sourceType: string;
+  quality: string;
+  signals: string[];
+}
+
+export interface ClassifiedSourceCollection {
+  sources: SourceClassification[];
+}
+
 export interface ErrorResponse {
   error: string;
   requestId?: string;

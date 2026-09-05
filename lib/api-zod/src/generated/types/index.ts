@@ -9,6 +9,8 @@
 export * from './aiProviderStatus';
 export * from './aiTestInput';
 export * from './aiTestResponse';
+export * from './classifiedSourceCollection';
+export * from './classifySourcesRequest';
 export * from './errorResponse';
 export * from './healthStatus';
 export * from './readWebpageRequest';
@@ -20,4 +22,6 @@ export * from './searchIntent';
 export * from './searchRequest';
 export * from './searchResponse';
 export * from './searchResult';
+export * from './sourceClassification';
+export * from './sourceInput';
 export * from './webpageDocument';
