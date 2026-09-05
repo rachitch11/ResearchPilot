@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: ai
+    description: AI provider operations
 paths:
   /healthz:
     get:
@@ -37,6 +39,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /ai/status:
+    get:
+      operationId: getAiProviderStatus
+      tags: [ai]
+      summary: AI provider status
+      description: Returns provider configuration status without exposing credentials
+      responses:
+        "200":
+          description: AI provider status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiProviderStatus"
+  /ai/test:
+    post:
+      operationId: testAiProvider
+      tags: [ai]
+      summary: Test AI provider
+      description: Generates a bounded response from the configured AI provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiTestInput"
+      responses:
+        "200":
+          description: Generated response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiTestResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: AI provider failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -46,4 +98,48 @@ components:
           type: string
       required:
         - status
+    AiProviderStatus:
+      type: object
+      properties:
+        provider:
+          type: string
+        model:
+          type: string
+        configured:
+          type: boolean
+      required:
+        - provider
+        - model
+        - configured
+    AiTestInput:
+      type: object
+      properties:
+        prompt:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+        - prompt
+    AiTestResponse:
+      type: object
+      properties:
+        text:
+          type: string
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - text
+        - provider
+        - model
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        requestId:
+          type: string
+      required:
+        - error
 

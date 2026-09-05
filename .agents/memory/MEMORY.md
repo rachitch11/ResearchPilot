@@ -1,0 +1,1 @@
+- [Gemini model availability](gemini-model-availability.md) — user-owned Gemini keys may reject older models; keep the model configurable and verify the current default with a live call.

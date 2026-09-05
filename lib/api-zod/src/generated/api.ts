@@ -26,3 +26,33 @@ export const HealthCheckAliasResponse = zod.object({
 })
 
 
+/**
+ * Returns provider configuration status without exposing credentials
+ * @summary AI provider status
+ */
+export const GetAiProviderStatusResponse = zod.object({
+  "provider": zod.string(),
+  "model": zod.string(),
+  "configured": zod.boolean()
+})
+
+
+/**
+ * Generates a bounded response from the configured AI provider
+ * @summary Test AI provider
+ */
+export const testAiProviderBodyPromptMax = 2000;
+
+
+
+export const TestAiProviderBody = zod.object({
+  "prompt": zod.string().min(1).max(testAiProviderBodyPromptMax)
+})
+
+export const TestAiProviderResponse = zod.object({
+  "text": zod.string(),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+
+

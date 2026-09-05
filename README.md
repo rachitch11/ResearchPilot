@@ -2,7 +2,7 @@
 
 ResearchPilot is an AI-powered research workspace designed to find, verify, and explain evidence behind complex questions.
 
-This repository is being built in controlled phases. The current checkpoint is **Phase 0 — Project Inspection & Foundation**: the frontend shell and API health foundation are in place, while the research pipeline is intentionally not enabled yet.
+This repository is being built in controlled phases. The current checkpoint is **Phase 2 — AI Provider**: the frontend shell, API foundation, provider abstraction, and minimal Gemini verification route are in place, while the research pipeline is intentionally not enabled yet.
 
 ## Run locally
 
@@ -49,7 +49,7 @@ BUILD_STATUS.md       # Recoverable phase-by-phase project state
 
 ## Environment variables
 
-Use `.env.example` as the safe template. Do not commit `.env` or provider credentials. AI, search, admin access, and rate-limit configuration will be activated and documented in their respective build phases.
+Use `.env.example` as the safe template. Do not commit `.env` or provider credentials. The Gemini API key is stored through the workspace secret manager. The AI test route uses it server-side and never returns or logs it.
 
 ## Architecture direction
 
@@ -60,7 +60,7 @@ Question → Planner → Search → Source reading → Evidence → Claims
          → Conflict detection → Synthesis → Cited report
 ```
 
-Provider-specific work will be kept behind internal service interfaces so the AI and search providers can be replaced without rewriting the research pipeline.
+Provider-specific work is kept behind internal service interfaces so the AI and search providers can be replaced without rewriting the research pipeline. The first adapter is Gemini.
 
 ## Phase recovery
 
@@ -68,4 +68,4 @@ If work resumes in a new environment, read `BUILD_STATUS.md`, then inspect the e
 
 ## Cost and limitations
 
-ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The current Phase 0 build does not make external provider calls.
+ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 2 build makes an external Gemini call only through `POST /api/ai/test`.

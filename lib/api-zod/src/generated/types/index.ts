@@ -6,4 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './aiProviderStatus';
+export * from './aiTestInput';
+export * from './aiTestResponse';
+export * from './errorResponse';
 export * from './healthStatus';

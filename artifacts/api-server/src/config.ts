@@ -3,6 +3,9 @@ const DEFAULTS = {
   maxSearchesPerResearch: 8,
   maxSourcesPerResearch: 12,
   maxResearchTimeSeconds: 120,
+  aiProvider: "gemini",
+  geminiModel: "gemini-3.6-flash",
+  aiRequestTimeoutMs: 30_000,
   requestBodyLimit: "32kb",
 } as const;
 
@@ -31,6 +34,12 @@ export const config = {
   environment: process.env.NODE_ENV ?? "development",
   logLevel: process.env.LOG_LEVEL ?? "info",
   corsOrigin: process.env.CORS_ORIGIN ?? "*",
+  aiProvider: process.env.AI_PROVIDER ?? DEFAULTS.aiProvider,
+  geminiModel: process.env.GEMINI_MODEL ?? DEFAULTS.geminiModel,
+  aiRequestTimeoutMs: readPositiveInteger(
+    "AI_REQUEST_TIMEOUT_MS",
+    DEFAULTS.aiRequestTimeoutMs,
+  ),
   requestBodyLimit: process.env.REQUEST_BODY_LIMIT ?? DEFAULTS.requestBodyLimit,
   maxResearchPerHour: readPositiveInteger(
     "MAX_RESEARCH_PER_HOUR",

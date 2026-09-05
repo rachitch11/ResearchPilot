@@ -9,3 +9,28 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface AiProviderStatus {
+  provider: string;
+  model: string;
+  configured: boolean;
+}
+
+export interface AiTestInput {
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  prompt: string;
+}
+
+export interface AiTestResponse {
+  text: string;
+  provider: string;
+  model: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+  requestId?: string;
+}
+
