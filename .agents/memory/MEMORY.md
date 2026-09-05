@@ -1,1 +1,2 @@
 - [Gemini model availability](gemini-model-availability.md) — user-owned Gemini keys may reject older models; keep the model configurable and verify the current default with a live call.
+- [OpenAPI codegen and Zod 3](openapi-codegen-zod3.md) — avoid integer/uri OpenAPI formats when generated schemas must compile against the workspace's Zod 3 runtime.
