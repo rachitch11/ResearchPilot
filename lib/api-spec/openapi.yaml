@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: ai
     description: AI provider operations
+  - name: research
+    description: Research planning operations
 paths:
   /healthz:
     get:
@@ -89,6 +91,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /research/plan:
+    post:
+      operationId: createResearchPlan
+      tags: [research]
+      summary: Create a research plan
+      description: Decomposes a question into bounded sub-questions and search intents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResearchPlanInput"
+      responses:
+        "200":
+          description: Structured research plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchPlan"
+        "400":
+          description: Invalid research question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Planner provider failure or invalid model output
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     HealthStatus:
@@ -133,6 +172,86 @@ components:
         - text
         - provider
         - model
+    ResearchPlanInput:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 5
+          maxLength: 2000
+      required:
+        - question
+    ResearchPlan:
+      type: object
+      properties:
+        question:
+          type: string
+        objective:
+          type: string
+          minLength: 1
+        subQuestions:
+          type: array
+          minItems: 2
+          maxItems: 6
+          items:
+            $ref: "#/components/schemas/ResearchSubQuestion"
+        searchQueries:
+          type: array
+          minItems: 3
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/ResearchSearchQuery"
+        constraints:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+        assumptions:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - question
+        - objective
+        - subQuestions
+        - searchQueries
+        - constraints
+        - assumptions
+        - provider
+        - model
+    ResearchSubQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+        question:
+          type: string
+          minLength: 1
+        rationale:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - question
+        - rationale
+    ResearchSearchQuery:
+      type: object
+      properties:
+        query:
+          type: string
+          minLength: 1
+        purpose:
+          type: string
+          minLength: 1
+      required:
+        - query
+        - purpose
     ErrorResponse:
       type: object
       properties:

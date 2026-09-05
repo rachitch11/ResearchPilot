@@ -102,6 +102,9 @@ export class GeminiProvider implements AiProvider {
             ],
             generationConfig: {
               maxOutputTokens: input.maxOutputTokens ?? 8192,
+              ...(input.responseMimeType
+                ? { responseMimeType: input.responseMimeType }
+                : {}),
             },
           }),
           signal: controller.signal,

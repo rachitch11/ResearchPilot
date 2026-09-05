@@ -56,3 +56,53 @@ export const TestAiProviderResponse = zod.object({
 })
 
 
+/**
+ * Decomposes a question into bounded sub-questions and search intents
+ * @summary Create a research plan
+ */
+export const createResearchPlanBodyQuestionMin = 5;
+export const createResearchPlanBodyQuestionMax = 2000;
+
+
+
+export const CreateResearchPlanBody = zod.object({
+  "question": zod.string().min(createResearchPlanBodyQuestionMin).max(createResearchPlanBodyQuestionMax)
+})
+
+
+
+
+
+export const createResearchPlanResponseSubQuestionsMin = 2;
+export const createResearchPlanResponseSubQuestionsMax = 6;
+
+
+
+export const createResearchPlanResponseSearchQueriesMin = 3;
+export const createResearchPlanResponseSearchQueriesMax = 8;
+
+export const createResearchPlanResponseConstraintsMax = 8;
+
+export const createResearchPlanResponseAssumptionsMax = 8;
+
+
+
+export const CreateResearchPlanResponse = zod.object({
+  "question": zod.string(),
+  "objective": zod.string().min(1),
+  "subQuestions": zod.array(zod.object({
+  "id": zod.string().min(1),
+  "question": zod.string().min(1),
+  "rationale": zod.string().min(1)
+})).min(createResearchPlanResponseSubQuestionsMin).max(createResearchPlanResponseSubQuestionsMax),
+  "searchQueries": zod.array(zod.object({
+  "query": zod.string().min(1),
+  "purpose": zod.string().min(1)
+})).min(createResearchPlanResponseSearchQueriesMin).max(createResearchPlanResponseSearchQueriesMax),
+  "constraints": zod.array(zod.string()).max(createResearchPlanResponseConstraintsMax),
+  "assumptions": zod.array(zod.string()).max(createResearchPlanResponseAssumptionsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+
+

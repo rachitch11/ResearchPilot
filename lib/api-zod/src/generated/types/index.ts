@@ -11,3 +11,7 @@ export * from './aiTestInput';
 export * from './aiTestResponse';
 export * from './errorResponse';
 export * from './healthStatus';
+export * from './researchPlan';
+export * from './researchPlanInput';
+export * from './researchSearchQuery';
+export * from './researchSubQuestion';

@@ -2,12 +2,13 @@
 
 ## Current phase
 
-**Phase 2 — AI Provider**
+**Phase 3 — Research Planner**
 
 ## Completed phases
 
 - Phase 0 — Project Inspection & Foundation
 - Phase 1 — Backend Foundation
+- Phase 2 — AI Provider
 
 ## Current implementation status
 
@@ -18,6 +19,8 @@
 - The AI provider abstraction supports a Gemini adapter with a minimal prompt test route.
 - `GET /api/ai/status` reports provider/model/configuration status without exposing credentials.
 - `POST /api/ai/test` validates a bounded prompt and returns a provider response.
+- `POST /api/research/plan` decomposes a validated question into typed sub-questions, search queries, constraints, and assumptions.
+- Planner output is requested as JSON and validated against the generated API schema before it is returned.
 
 ## Files added or modified
 
@@ -30,7 +33,10 @@
 - `artifacts/api-server/src/routes/health.ts` — health endpoint and alias
 - `artifacts/api-server/src/providers/` — provider-neutral AI interface and Gemini adapter
 - `artifacts/api-server/src/routes/ai.ts` — provider status and minimal verification routes
+- `artifacts/api-server/src/services/research-planner.ts` — prompt construction and strict plan parsing
+- `artifacts/api-server/src/routes/research.ts` — research planning endpoint
 - `lib/api-spec/openapi.yaml` — AI status/test contracts
+- `lib/api-spec/openapi.yaml` — research planning contract
 
 ## Tests completed
 
@@ -41,14 +47,15 @@
 - Request logging verification through the running workflow
 - API provider status verification
 - Gemini provider response verification using the securely stored secret
+- Research planner input validation and live structured-plan verification
 
 ## Test result
 
-PASS. The API server and full workspace typechecks pass, the production bundle builds, provider status reports Gemini configured, invalid prompts return 400, and the live Gemini test returns a 200 response without exposing the secret.
+PASS. The full workspace typecheck passes, the API bundle builds, a live planning request returns a schema-valid structured plan, invalid short questions return 400, and the health route remains green.
 
 ## Known issues
 
-- The research pipeline is not available until the next approved phases.
+- Search, source extraction, evidence, synthesis, and the rest of the research pipeline are not available until later approved phases.
 - Gemini is selected for the first adapter and is configured through the workspace secret `GEMINI_API_KEY`.
 - No database is required for the Phase 2 provider verification.
 - The backend foundation uses the existing TypeScript/Express service scaffold; provider-specific and research-specific modules remain unimplemented.
@@ -59,4 +66,4 @@ PASS. The API server and full workspace typechecks pass, the production bundle b
 
 ## Next phase
 
-Phase 3 — Research Planner
+Phase 4 — Search Provider

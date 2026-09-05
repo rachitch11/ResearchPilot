@@ -29,6 +29,52 @@ export interface AiTestResponse {
   model: string;
 }
 
+export interface ResearchPlanInput {
+  /**
+     * @minLength 5
+     * @maxLength 2000
+     */
+  question: string;
+}
+
+export interface ResearchSubQuestion {
+  /** @minLength 1 */
+  id: string;
+  /** @minLength 1 */
+  question: string;
+  /** @minLength 1 */
+  rationale: string;
+}
+
+export interface ResearchSearchQuery {
+  /** @minLength 1 */
+  query: string;
+  /** @minLength 1 */
+  purpose: string;
+}
+
+export interface ResearchPlan {
+  question: string;
+  /** @minLength 1 */
+  objective: string;
+  /**
+     * @minItems 2
+     * @maxItems 6
+     */
+  subQuestions: ResearchSubQuestion[];
+  /**
+     * @minItems 3
+     * @maxItems 8
+     */
+  searchQueries: ResearchSearchQuery[];
+  /** @maxItems 8 */
+  constraints: string[];
+  /** @maxItems 8 */
+  assumptions: string[];
+  provider: string;
+  model: string;
+}
+
 export interface ErrorResponse {
   error: string;
   requestId?: string;

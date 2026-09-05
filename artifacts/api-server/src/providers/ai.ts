@@ -1,6 +1,7 @@
 export interface GenerateTextInput {
   prompt: string;
   maxOutputTokens?: number;
+  responseMimeType?: "text/plain" | "application/json";
 }
 
 export interface GenerateTextResult {

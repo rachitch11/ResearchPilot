@@ -24,7 +24,9 @@ import type {
   AiTestInput,
   AiTestResponse,
   ErrorResponse,
-  HealthStatus
+  HealthStatus,
+  ResearchPlan,
+  ResearchPlanInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -358,5 +360,77 @@ export const useTestAiProvider = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getTestAiProviderMutationOptions(options));
+    }
+
+export const getCreateResearchPlanUrl = () => {
+
+
+
+
+  return `/api/research/plan`
+}
+
+/**
+ * Decomposes a question into bounded sub-questions and search intents
+ * @summary Create a research plan
+ */
+export const createResearchPlan = async (researchPlanInput: ResearchPlanInput, options?: Parameters<typeof customFetch>[1]): Promise<ResearchPlan> => {
+
+  return customFetch<ResearchPlan>(getCreateResearchPlanUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(researchPlanInput)
+  }
+);}
+
+
+
+
+
+export const getCreateResearchPlanMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createResearchPlan>>, TError,{data: BodyType<ResearchPlanInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createResearchPlan>>, TError,{data: BodyType<ResearchPlanInput>}, TContext> => {
+
+const mutationKey = ['createResearchPlan'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createResearchPlan>>, {data: BodyType<ResearchPlanInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createResearchPlan(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateResearchPlanMutationResult = NonNullable<Awaited<ReturnType<typeof createResearchPlan>>>
+    export type CreateResearchPlanMutationBody = BodyType<ResearchPlanInput>
+    export type CreateResearchPlanMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Create a research plan
+ */
+export const useCreateResearchPlan = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createResearchPlan>>, TError,{data: BodyType<ResearchPlanInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createResearchPlan>>,
+        TError,
+        {data: BodyType<ResearchPlanInput>},
+        TContext
+      > => {
+      return useMutation(getCreateResearchPlanMutationOptions(options));
     }
 

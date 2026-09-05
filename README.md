@@ -2,7 +2,7 @@
 
 ResearchPilot is an AI-powered research workspace designed to find, verify, and explain evidence behind complex questions.
 
-This repository is being built in controlled phases. The current checkpoint is **Phase 2 — AI Provider**: the frontend shell, API foundation, provider abstraction, and minimal Gemini verification route are in place, while the research pipeline is intentionally not enabled yet.
+This repository is being built in controlled phases. The current checkpoint is **Phase 3 — Research Planner**: ResearchPilot can validate a question and produce a structured planning outline, while web search and evidence collection remain intentionally disabled.
 
 ## Run locally
 
@@ -68,4 +68,4 @@ If work resumes in a new environment, read `BUILD_STATUS.md`, then inspect the e
 
 ## Cost and limitations
 
-ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 2 build makes an external Gemini call only through `POST /api/ai/test`.
+ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 3 build makes external Gemini calls through the provider verification and research planning routes.
