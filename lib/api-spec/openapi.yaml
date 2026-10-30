@@ -13,7 +13,7 @@ tags:
   - name: ai
     description: AI provider operations
   - name: research
-    description: Research planning operations
+    description: Research planning, analysis, and orchestration operations
   - name: search
     description: Web search operations
   - name: webpage
@@ -130,6 +130,181 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "503":
           description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /research/evidence:
+    post:
+      operationId: extractEvidence
+      tags: [research]
+      summary: Extract evidence from sources
+      description: Extracts sourced factual evidence from bounded webpage text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExtractEvidenceRequest"
+      responses:
+        "200":
+          description: Extracted evidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvidenceExtraction"
+        "400":
+          description: Invalid evidence request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Evidence extractor provider failure or invalid model output
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /research/claims:
+    post:
+      operationId: analyzeClaims
+      tags: [research]
+      summary: Analyze claims and conflicts
+      description: Groups evidence into claims and identifies genuine conflicts without picking winners
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalyzeClaimsRequest"
+      responses:
+        "200":
+          description: Claim analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClaimAnalysis"
+        "400":
+          description: Invalid claim analysis request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Claim analysis provider failure or invalid model output
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /research/synthesize:
+    post:
+      operationId: synthesizeResearch
+      tags: [research]
+      summary: Synthesize a cited research report
+      description: Builds a structured synthesis from evidence and claim analysis with traceable citations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SynthesizeResearchRequest"
+      responses:
+        "200":
+          description: Cited research synthesis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchSynthesis"
+        "400":
+          description: Invalid synthesis request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Synthesis provider failure or invalid model output
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: AI provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /research:
+    post:
+      operationId: runResearch
+      tags: [research]
+      summary: Run a complete research workflow
+      description: Plans, searches, reads, extracts, analyzes, and synthesizes a bounded research report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunResearchRequest"
+      responses:
+        "200":
+          description: Research run result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchRun"
+        "400":
+          description: Invalid research question
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Research pipeline failure
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "503":
+          description: A required provider is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /research/{researchId}:
+    get:
+      operationId: getResearch
+      tags: [research]
+      summary: Get a research run
+      description: Returns a previously completed in-memory research run
+      parameters:
+        - name: researchId
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 64
+      responses:
+        "200":
+          description: Research run result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResearchRun"
+        "404":
+          description: Research run not found
           content:
             application/json:
               schema:
@@ -522,6 +697,517 @@ components:
         - sourceType
         - quality
         - signals
+    ExtractEvidenceRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 5
+          maxLength: 2000
+        subQuestions:
+          type: array
+          minItems: 1
+          maxItems: 6
+          items:
+            $ref: "#/components/schemas/ResearchSubQuestion"
+        sources:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/EvidenceSourceInput"
+      required:
+        - question
+        - subQuestions
+        - sources
+    EvidenceSourceInput:
+      type: object
+      properties:
+        url:
+          type: string
+          minLength: 8
+          maxLength: 2048
+        title:
+          type: string
+          maxLength: 500
+        domain:
+          type: string
+          maxLength: 255
+        publicationDate:
+          type: string
+          maxLength: 64
+        sourceType:
+          type: string
+          maxLength: 64
+        cleanText:
+          type: string
+          maxLength: 20000
+      required:
+        - url
+        - title
+        - domain
+        - cleanText
+    EvidenceExtraction:
+      type: object
+      properties:
+        question:
+          type: string
+        items:
+          type: array
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/EvidenceItem"
+        skippedSources:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkippedSource"
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - question
+        - items
+        - skippedSources
+        - provider
+        - model
+    EvidenceItem:
+      type: object
+      properties:
+        id:
+          type: string
+        claim:
+          type: string
+        passage:
+          type: string
+        summary:
+          type: string
+        sourceUrl:
+          type: string
+        sourceTitle:
+          type: string
+        sourceDomain:
+          type: string
+        publicationDate:
+          type: string
+        sourceType:
+          type: string
+        subQuestionId:
+          type: string
+        confidence:
+          type: string
+          enum: [high, medium, low]
+      required:
+        - id
+        - claim
+        - passage
+        - summary
+        - sourceUrl
+        - sourceTitle
+        - sourceDomain
+        - subQuestionId
+        - confidence
+    SkippedSource:
+      type: object
+      properties:
+        url:
+          type: string
+        reason:
+          type: string
+      required:
+        - url
+        - reason
+    AnalyzeClaimsRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 5
+          maxLength: 2000
+        evidence:
+          type: array
+          minItems: 1
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/EvidenceItem"
+      required:
+        - question
+        - evidence
+    ClaimAnalysis:
+      type: object
+      properties:
+        question:
+          type: string
+        claims:
+          type: array
+          maxItems: 16
+          items:
+            $ref: "#/components/schemas/ResearchClaim"
+        conflicts:
+          type: array
+          maxItems: 12
+          items:
+            $ref: "#/components/schemas/ResearchConflict"
+        agreement:
+          type: array
+          maxItems: 12
+          items:
+            $ref: "#/components/schemas/ClaimAgreement"
+        unresolvedConflicts:
+          type: array
+          maxItems: 12
+          items:
+            $ref: "#/components/schemas/ResearchConflict"
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - question
+        - claims
+        - conflicts
+        - agreement
+        - unresolvedConflicts
+        - provider
+        - model
+    ResearchClaim:
+      type: object
+      properties:
+        id:
+          type: string
+        statement:
+          type: string
+        evidenceIds:
+          type: array
+          items:
+            type: string
+        support:
+          type: string
+          enum: [supported, insufficient, unsupported]
+        notes:
+          type: string
+      required:
+        - id
+        - statement
+        - evidenceIds
+        - support
+    ResearchConflict:
+      type: object
+      properties:
+        id:
+          type: string
+        claimIds:
+          type: array
+          items:
+            type: string
+        evidenceIds:
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+          enum:
+            - contradiction
+            - date_difference
+            - definition_difference
+            - scope_difference
+            - methodology_difference
+        description:
+          type: string
+        resolved:
+          type: boolean
+      required:
+        - id
+        - claimIds
+        - evidenceIds
+        - type
+        - description
+        - resolved
+    ClaimAgreement:
+      type: object
+      properties:
+        claimIds:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+      required:
+        - claimIds
+        - description
+    SynthesizeResearchRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 5
+          maxLength: 2000
+        plan:
+          $ref: "#/components/schemas/ResearchPlan"
+        evidence:
+          type: array
+          minItems: 1
+          maxItems: 24
+          items:
+            $ref: "#/components/schemas/EvidenceItem"
+        analysis:
+          $ref: "#/components/schemas/ClaimAnalysis"
+      required:
+        - question
+        - evidence
+        - analysis
+    ResearchSynthesis:
+      type: object
+      properties:
+        question:
+          type: string
+        executiveSummary:
+          $ref: "#/components/schemas/CitedStatement"
+        keyFindings:
+          type: array
+          maxItems: 10
+          items:
+            $ref: "#/components/schemas/CitedStatement"
+        findingsByQuestion:
+          type: array
+          maxItems: 6
+          items:
+            $ref: "#/components/schemas/QuestionFindings"
+        supportingEvidenceIds:
+          type: array
+          items:
+            type: string
+        contradictingEvidenceIds:
+          type: array
+          items:
+            type: string
+        agreement:
+          type: array
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/CitedStatement"
+        unresolvedConflicts:
+          type: array
+          maxItems: 8
+          items:
+            $ref: "#/components/schemas/CitedStatement"
+        evidenceGaps:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+        limitations:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+        conclusion:
+          $ref: "#/components/schemas/CitedStatement"
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResearchCitation"
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - question
+        - executiveSummary
+        - keyFindings
+        - findingsByQuestion
+        - supportingEvidenceIds
+        - contradictingEvidenceIds
+        - agreement
+        - unresolvedConflicts
+        - evidenceGaps
+        - limitations
+        - conclusion
+        - citations
+        - provider
+        - model
+    CitedStatement:
+      type: object
+      properties:
+        text:
+          type: string
+        citationIds:
+          type: array
+          items:
+            type: string
+        kind:
+          type: string
+          enum: [fact, interpretation]
+      required:
+        - text
+        - citationIds
+        - kind
+    QuestionFindings:
+      type: object
+      properties:
+        subQuestionId:
+          type: string
+        question:
+          type: string
+        findings:
+          type: array
+          items:
+            $ref: "#/components/schemas/CitedStatement"
+      required:
+        - subQuestionId
+        - question
+        - findings
+    ResearchCitation:
+      type: object
+      properties:
+        id:
+          type: string
+        evidenceId:
+          type: string
+        url:
+          type: string
+        title:
+          type: string
+        domain:
+          type: string
+      required:
+        - id
+        - evidenceId
+        - url
+        - title
+        - domain
+    RunResearchRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          minLength: 5
+          maxLength: 2000
+      required:
+        - question
+    ResearchRun:
+      type: object
+      properties:
+        researchId:
+          type: string
+        status:
+          type: string
+          enum: [completed, completed_with_partial_results, failed]
+        question:
+          type: string
+        progress:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResearchProgressEvent"
+        plan:
+          $ref: "#/components/schemas/ResearchPlan"
+        sources:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResearchSourceRecord"
+        evidence:
+          $ref: "#/components/schemas/EvidenceExtraction"
+        analysis:
+          $ref: "#/components/schemas/ClaimAnalysis"
+        synthesis:
+          $ref: "#/components/schemas/ResearchSynthesis"
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ResearchStageError"
+        metadata:
+          $ref: "#/components/schemas/ResearchRunMetadata"
+      required:
+        - researchId
+        - status
+        - question
+        - progress
+        - sources
+        - errors
+        - metadata
+    ResearchProgressEvent:
+      type: object
+      properties:
+        stage:
+          type: string
+          enum:
+            - understanding_question
+            - creating_plan
+            - searching
+            - classifying_sources
+            - reading_sources
+            - extracting_evidence
+            - analyzing_claims
+            - synthesizing
+            - completed
+            - failed
+        status:
+          type: string
+          enum: [started, completed, skipped, failed]
+        detail:
+          type: string
+      required:
+        - stage
+        - status
+    ResearchSourceRecord:
+      type: object
+      properties:
+        url:
+          type: string
+        title:
+          type: string
+        domain:
+          type: string
+        sourceType:
+          type: string
+        quality:
+          type: string
+        readStatus:
+          type: string
+          enum: [read, failed, skipped]
+        error:
+          type: string
+      required:
+        - url
+        - domain
+        - sourceType
+        - quality
+        - readStatus
+    ResearchStageError:
+      type: object
+      properties:
+        stage:
+          type: string
+        message:
+          type: string
+      required:
+        - stage
+        - message
+    ResearchRunMetadata:
+      type: object
+      properties:
+        durationMs:
+          type: number
+        aiCalls:
+          type: number
+        sourcesAttempted:
+          type: number
+        sourcesRead:
+          type: number
+        evidenceCount:
+          type: number
+        provider:
+          type: string
+        model:
+          type: string
+      required:
+        - durationMs
+        - aiCalls
+        - sourcesAttempted
+        - sourcesRead
+        - evidenceCount
+        - provider
+        - model
     ErrorResponse:
       type: object
       properties:

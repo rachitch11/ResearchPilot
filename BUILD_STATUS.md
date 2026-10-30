@@ -2,7 +2,7 @@
 
 ## Current phase
 
-**Phase 6 — Source Classification**
+**Phase 10 — Complete Research Pipeline**
 
 ## Completed phases
 
@@ -12,74 +12,68 @@
 - Phase 3 — Research Planner
 - Phase 4 — Web Search (implementation complete; live provider check pending)
 - Phase 5 — Webpage Extraction
+- Phase 6 — Source Classification
+- Phase 7 — Evidence Extraction
+- Phase 8 — Claim Analysis and Conflict Detection
+- Phase 9 — Evidence Synthesis
+- Phase 10 — Complete Research Pipeline
 
 ## Current implementation status
 
-- The project has a deployable React + Vite frontend artifact at the root route.
-- The existing API service now has centralized runtime configuration, request limits, CORS configuration, structured request logging, typed API error responses, and a final error boundary.
-- The health contract is available at `/api/healthz` and `/api/health`.
-- Research orchestration, evidence extraction, analytics, authentication, and evaluation are intentionally not implemented yet.
-- The AI provider abstraction supports a Gemini adapter with a minimal prompt test route.
-- `GET /api/ai/status` reports provider/model/configuration status without exposing credentials.
-- `POST /api/ai/test` validates a bounded prompt and returns a provider response.
-- `POST /api/research/plan` decomposes a validated question into typed sub-questions, search queries, constraints, and assumptions.
-- Planner output is requested as JSON and validated against the generated API schema before it is returned.
-- `POST /api/search` accepts bounded search intents, queries Brave Search, normalizes result metadata, removes duplicate URLs, and enforces source limits.
-- The search provider is isolated behind a provider interface so another search backend can replace Brave without changing the route or future pipeline.
-- `POST /api/webpage/read` retrieves bounded public HTML and returns title, URL, domain, publication date when available, and cleaned readable text.
-- Webpage reads validate protocols and hostnames, reject local/private targets, validate redirects, enforce timeouts and response-size limits, and continue to return sanitized errors.
-- `POST /api/sources/classify` classifies a bounded batch of source URLs into Government, Academic, International Organization, Company, Financial Institution, News, Industry Publication, Blog, or Unknown.
-- Each classification includes a High, Medium, Low, or Unknown quality estimate plus transparent heuristic signals.
+- The project has a deployable React + Vite frontend artifact at the root route. The landing page remains a Phase 0/11-era shell and is not wired to the research pipeline.
+- The API service has runtime configuration, request limits, CORS, structured logging, typed errors, and health checks at `/api/healthz` and `/api/health`.
+- `GET /api/ai/status` and `POST /api/ai/test` remain available for Gemini provider verification.
+- `POST /api/research/plan` produces a structured research plan.
+- `POST /api/search`, `POST /api/webpage/read`, and `POST /api/sources/classify` remain available.
+- `POST /api/research/evidence` extracts sourced evidence, keeps exact passages separate from summaries, and drops quotations that cannot be found in the source text.
+- `POST /api/research/claims` groups evidence into claims, marks insufficient/unsupported claims, and records conflicts without choosing a winner.
+- `POST /api/research/synthesize` produces a cited synthesis. Citation URLs and evidence IDs are rebuilt from supplied evidence; uncited “facts” are dropped or marked interpretive.
+- `POST /api/research` runs the bounded pipeline: plan → search → classify → read → extract → analyze → synthesize. Partial source failures are allowed. Runs are stored in memory for `GET /api/research/{researchId}`.
+- Authentication, analytics, evaluation, and the Phase 11–15 research workspace UI are not implemented.
 
 ## Files added or modified
 
-- `artifacts/researchpilot/` — new React + Vite app shell
-- `artifacts/api-server/src/config.ts` — validated runtime configuration
-- `artifacts/api-server/src/models/errors.ts` — typed API error model
-- `artifacts/api-server/src/middlewares/errors.ts` — 404 and centralized error handling
-- `artifacts/api-server/src/app.ts` — request limits, CORS, and error middleware wiring
-- `artifacts/api-server/src/lib/logger.ts` — service-aware structured logging
-- `artifacts/api-server/src/routes/health.ts` — health endpoint and alias
-- `artifacts/api-server/src/providers/` — provider-neutral AI interface and Gemini adapter
-- `artifacts/api-server/src/routes/ai.ts` — provider status and minimal verification routes
-- `artifacts/api-server/src/services/research-planner.ts` — prompt construction and strict plan parsing
-- `artifacts/api-server/src/routes/research.ts` — research planning endpoint
-- `lib/api-spec/openapi.yaml` — AI status/test contracts
-- `lib/api-spec/openapi.yaml` — research planning contract
+- `lib/api-spec/openapi.yaml` — evidence, claims, synthesis, and research-run contracts
+- `lib/api-zod/` and `lib/api-client-react/` — regenerated from OpenAPI
+- `artifacts/api-server/src/config.ts` — research bounds and 256kb JSON body limit
+- `artifacts/api-server/src/lib/json.ts`, `text.ts`, `ai-json.ts` — shared parsing, truncation, and JSON generation
+- `artifacts/api-server/src/services/evidence-extractor.ts`
+- `artifacts/api-server/src/services/claim-analyzer.ts`
+- `artifacts/api-server/src/services/synthesizer.ts`
+- `artifacts/api-server/src/services/research-orchestrator.ts`
+- `artifacts/api-server/src/services/research-store.ts`
+- `artifacts/api-server/src/routes/research.ts`
+- `artifacts/api-server/src/**/*.test.ts` — focused unit and mocked pipeline tests
+- `.env.example` and `README.md`
 
 ## Tests completed
 
 - API server typecheck
 - API server production bundle
-- API health route verification at `/api/health` and `/api/healthz`
-- Structured 404 response verification
-- Request logging verification through the running workflow
-- API provider status verification
-- Gemini provider response verification using the securely stored secret
-- Research planner input validation and live structured-plan verification
-- Search request validation, URL normalization, and duplicate-result handling
-- API startup and search-provider configuration handling
-- Webpage extraction against a public HTML page
-- Local/private URL rejection and malformed-request handling
-- Source classification across government, academic, news, company, and blog domains
+- `pnpm --filter @workspace/api-server run test` — 14/14 passing
+- Frontend typecheck
+- Health, 404, source classification, evidence validation, empty-source extraction, missing research-run, and SSRF rejection against a running API
+- Live `POST /api/webpage/read` against `https://example.com/`
+- Live Gemini and Brave Search were not available in this environment (`GEMINI_API_KEY` / `SEARCH_API_KEY` unset)
 
 ## Test result
 
-PASS for Phase 6. Source classification typechecks and bundles, classifies a mixed batch of domains with explicit quality signals, rejects malformed source input, and keeps the Phase 4 live Brave Search limitation explicit.
+PASS for Phases 7–10 with mocked providers. Live end-to-end `POST /api/research` is NOT TESTED because provider secrets were not present. Frontend production Vite build is FAIL on this Darwin host because workspace pnpm overrides omit `@rollup/rollup-darwin-arm64`; frontend typecheck PASS.
 
 ## Known issues
 
-- Evidence, synthesis, and the rest of the research pipeline are not available until later approved phases.
-- Gemini is selected for the first adapter and is configured through the workspace secret `GEMINI_API_KEY`.
-- No database is required for the Phase 2 provider verification.
-- The backend foundation uses the existing TypeScript/Express service scaffold; provider-specific and research-specific modules remain unimplemented.
+- Research runs are in-memory only and are lost on process restart.
+- Rate-limit config exists but is not enforced as HTTP rate limiting (planned Phase 17).
+- Frontend does not render progress, citations, or reports (Phases 11–15).
+- Live Gemini/Brave verification remains pending when secrets are not loaded into the process environment.
+- Frontend production build on macOS requires the Rollup native binary currently excluded by `pnpm-workspace.yaml` overrides.
 
 ## Required environment variables
 
-- `GEMINI_API_KEY` is required for the AI test route. It is stored through the workspace secret manager and is never logged or returned.
-- `SEARCH_API_KEY` is required for live `/api/search` requests. It must be stored through the workspace secret manager and is never logged or returned.
-- `SEARCH_API_KEY` remains optional for webpage extraction.
+- `GEMINI_API_KEY` is required for planning, evidence, claims, synthesis, and `POST /api/research`.
+- `SEARCH_API_KEY` is required for live search and `POST /api/research`.
+- `REQUEST_BODY_LIMIT` defaults to `256kb` so evidence payloads can be accepted.
 
 ## Next phase
 
-Phase 7 — Evidence Extraction
+Phase 11 — Frontend Foundation

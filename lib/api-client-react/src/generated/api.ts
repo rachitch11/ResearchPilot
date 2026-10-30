@@ -23,15 +23,23 @@ import type {
   AiProviderStatus,
   AiTestInput,
   AiTestResponse,
+  AnalyzeClaimsRequest,
+  ClaimAnalysis,
   ClassifiedSourceCollection,
   ClassifySourcesRequest,
   ErrorResponse,
+  EvidenceExtraction,
+  ExtractEvidenceRequest,
   HealthStatus,
   ReadWebpageRequest,
   ResearchPlan,
   ResearchPlanInput,
+  ResearchRun,
+  ResearchSynthesis,
+  RunResearchRequest,
   SearchRequest,
   SearchResponse,
+  SynthesizeResearchRequest,
   WebpageDocument
 } from './api.schemas';
 
@@ -439,6 +447,372 @@ export const useCreateResearchPlan = <TError = ErrorType<ErrorResponse>,
       > => {
       return useMutation(getCreateResearchPlanMutationOptions(options));
     }
+
+export const getExtractEvidenceUrl = () => {
+
+
+
+
+  return `/api/research/evidence`
+}
+
+/**
+ * Extracts sourced factual evidence from bounded webpage text
+ * @summary Extract evidence from sources
+ */
+export const extractEvidence = async (extractEvidenceRequest: ExtractEvidenceRequest, options?: Parameters<typeof customFetch>[1]): Promise<EvidenceExtraction> => {
+
+  return customFetch<EvidenceExtraction>(getExtractEvidenceUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(extractEvidenceRequest)
+  }
+);}
+
+
+
+
+
+export const getExtractEvidenceMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof extractEvidence>>, TError,{data: BodyType<ExtractEvidenceRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof extractEvidence>>, TError,{data: BodyType<ExtractEvidenceRequest>}, TContext> => {
+
+const mutationKey = ['extractEvidence'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof extractEvidence>>, {data: BodyType<ExtractEvidenceRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  extractEvidence(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExtractEvidenceMutationResult = NonNullable<Awaited<ReturnType<typeof extractEvidence>>>
+    export type ExtractEvidenceMutationBody = BodyType<ExtractEvidenceRequest>
+    export type ExtractEvidenceMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Extract evidence from sources
+ */
+export const useExtractEvidence = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof extractEvidence>>, TError,{data: BodyType<ExtractEvidenceRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof extractEvidence>>,
+        TError,
+        {data: BodyType<ExtractEvidenceRequest>},
+        TContext
+      > => {
+      return useMutation(getExtractEvidenceMutationOptions(options));
+    }
+
+export const getAnalyzeClaimsUrl = () => {
+
+
+
+
+  return `/api/research/claims`
+}
+
+/**
+ * Groups evidence into claims and identifies genuine conflicts without picking winners
+ * @summary Analyze claims and conflicts
+ */
+export const analyzeClaims = async (analyzeClaimsRequest: AnalyzeClaimsRequest, options?: Parameters<typeof customFetch>[1]): Promise<ClaimAnalysis> => {
+
+  return customFetch<ClaimAnalysis>(getAnalyzeClaimsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(analyzeClaimsRequest)
+  }
+);}
+
+
+
+
+
+export const getAnalyzeClaimsMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeClaims>>, TError,{data: BodyType<AnalyzeClaimsRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof analyzeClaims>>, TError,{data: BodyType<AnalyzeClaimsRequest>}, TContext> => {
+
+const mutationKey = ['analyzeClaims'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof analyzeClaims>>, {data: BodyType<AnalyzeClaimsRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  analyzeClaims(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AnalyzeClaimsMutationResult = NonNullable<Awaited<ReturnType<typeof analyzeClaims>>>
+    export type AnalyzeClaimsMutationBody = BodyType<AnalyzeClaimsRequest>
+    export type AnalyzeClaimsMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Analyze claims and conflicts
+ */
+export const useAnalyzeClaims = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeClaims>>, TError,{data: BodyType<AnalyzeClaimsRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof analyzeClaims>>,
+        TError,
+        {data: BodyType<AnalyzeClaimsRequest>},
+        TContext
+      > => {
+      return useMutation(getAnalyzeClaimsMutationOptions(options));
+    }
+
+export const getSynthesizeResearchUrl = () => {
+
+
+
+
+  return `/api/research/synthesize`
+}
+
+/**
+ * Builds a structured synthesis from evidence and claim analysis with traceable citations
+ * @summary Synthesize a cited research report
+ */
+export const synthesizeResearch = async (synthesizeResearchRequest: SynthesizeResearchRequest, options?: Parameters<typeof customFetch>[1]): Promise<ResearchSynthesis> => {
+
+  return customFetch<ResearchSynthesis>(getSynthesizeResearchUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(synthesizeResearchRequest)
+  }
+);}
+
+
+
+
+
+export const getSynthesizeResearchMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synthesizeResearch>>, TError,{data: BodyType<SynthesizeResearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof synthesizeResearch>>, TError,{data: BodyType<SynthesizeResearchRequest>}, TContext> => {
+
+const mutationKey = ['synthesizeResearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof synthesizeResearch>>, {data: BodyType<SynthesizeResearchRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  synthesizeResearch(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SynthesizeResearchMutationResult = NonNullable<Awaited<ReturnType<typeof synthesizeResearch>>>
+    export type SynthesizeResearchMutationBody = BodyType<SynthesizeResearchRequest>
+    export type SynthesizeResearchMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Synthesize a cited research report
+ */
+export const useSynthesizeResearch = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof synthesizeResearch>>, TError,{data: BodyType<SynthesizeResearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof synthesizeResearch>>,
+        TError,
+        {data: BodyType<SynthesizeResearchRequest>},
+        TContext
+      > => {
+      return useMutation(getSynthesizeResearchMutationOptions(options));
+    }
+
+export const getRunResearchUrl = () => {
+
+
+
+
+  return `/api/research`
+}
+
+/**
+ * Plans, searches, reads, extracts, analyzes, and synthesizes a bounded research report
+ * @summary Run a complete research workflow
+ */
+export const runResearch = async (runResearchRequest: RunResearchRequest, options?: Parameters<typeof customFetch>[1]): Promise<ResearchRun> => {
+
+  return customFetch<ResearchRun>(getRunResearchUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(runResearchRequest)
+  }
+);}
+
+
+
+
+
+export const getRunResearchMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runResearch>>, TError,{data: BodyType<RunResearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof runResearch>>, TError,{data: BodyType<RunResearchRequest>}, TContext> => {
+
+const mutationKey = ['runResearch'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof runResearch>>, {data: BodyType<RunResearchRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  runResearch(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RunResearchMutationResult = NonNullable<Awaited<ReturnType<typeof runResearch>>>
+    export type RunResearchMutationBody = BodyType<RunResearchRequest>
+    export type RunResearchMutationError = ErrorType<ErrorResponse>
+
+    /**
+ * @summary Run a complete research workflow
+ */
+export const useRunResearch = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runResearch>>, TError,{data: BodyType<RunResearchRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof runResearch>>,
+        TError,
+        {data: BodyType<RunResearchRequest>},
+        TContext
+      > => {
+      return useMutation(getRunResearchMutationOptions(options));
+    }
+
+export const getGetResearchUrl = (researchId: string,) => {
+
+
+
+
+  return `/api/research/${researchId}`
+}
+
+/**
+ * Returns a previously completed in-memory research run
+ * @summary Get a research run
+ */
+export const getResearch = async (researchId: string, options?: Parameters<typeof customFetch>[1]): Promise<ResearchRun> => {
+
+  return customFetch<ResearchRun>(getGetResearchUrl(researchId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetResearchQueryKey = (researchId: string,) => {
+    return [
+    `/api/research/${researchId}`
+    ] as const;
+    }
+
+
+export const getGetResearchQueryOptions = <TData = Awaited<ReturnType<typeof getResearch>>, TError = ErrorType<ErrorResponse>>(researchId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearch>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetResearchQueryKey(researchId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getResearch>>> = ({ signal }) => getResearch(researchId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: researchId !== null && researchId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getResearch>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetResearchQueryResult = NonNullable<Awaited<ReturnType<typeof getResearch>>>
+export type GetResearchQueryError = ErrorType<ErrorResponse>
+
+
+/**
+ * @summary Get a research run
+ */
+
+export function useGetResearch<TData = Awaited<ReturnType<typeof getResearch>>, TError = ErrorType<ErrorResponse>>(
+ researchId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getResearch>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetResearchQueryOptions(researchId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 
 export const getSearchWebUrl = () => {
 

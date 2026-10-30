@@ -168,6 +168,311 @@ export interface ClassifiedSourceCollection {
   sources: SourceClassification[];
 }
 
+export interface EvidenceSourceInput {
+  /**
+     * @minLength 8
+     * @maxLength 2048
+     */
+  url: string;
+  /** @maxLength 500 */
+  title: string;
+  /** @maxLength 255 */
+  domain: string;
+  /** @maxLength 64 */
+  publicationDate?: string;
+  /** @maxLength 64 */
+  sourceType?: string;
+  /** @maxLength 20000 */
+  cleanText: string;
+}
+
+export interface ExtractEvidenceRequest {
+  /**
+     * @minLength 5
+     * @maxLength 2000
+     */
+  question: string;
+  /**
+     * @minItems 1
+     * @maxItems 6
+     */
+  subQuestions: ResearchSubQuestion[];
+  /**
+     * @minItems 1
+     * @maxItems 8
+     */
+  sources: EvidenceSourceInput[];
+}
+
+export type EvidenceItemConfidence = typeof EvidenceItemConfidence[keyof typeof EvidenceItemConfidence];
+
+
+export const EvidenceItemConfidence = {
+  high: 'high',
+  medium: 'medium',
+  low: 'low',
+} as const;
+
+export interface EvidenceItem {
+  id: string;
+  claim: string;
+  passage: string;
+  summary: string;
+  sourceUrl: string;
+  sourceTitle: string;
+  sourceDomain: string;
+  publicationDate?: string;
+  sourceType?: string;
+  subQuestionId: string;
+  confidence: EvidenceItemConfidence;
+}
+
+export interface SkippedSource {
+  url: string;
+  reason: string;
+}
+
+export interface EvidenceExtraction {
+  question: string;
+  /** @maxItems 24 */
+  items: EvidenceItem[];
+  skippedSources: SkippedSource[];
+  provider: string;
+  model: string;
+}
+
+export interface AnalyzeClaimsRequest {
+  /**
+     * @minLength 5
+     * @maxLength 2000
+     */
+  question: string;
+  /**
+     * @minItems 1
+     * @maxItems 24
+     */
+  evidence: EvidenceItem[];
+}
+
+export type ResearchClaimSupport = typeof ResearchClaimSupport[keyof typeof ResearchClaimSupport];
+
+
+export const ResearchClaimSupport = {
+  supported: 'supported',
+  insufficient: 'insufficient',
+  unsupported: 'unsupported',
+} as const;
+
+export interface ResearchClaim {
+  id: string;
+  statement: string;
+  evidenceIds: string[];
+  support: ResearchClaimSupport;
+  notes?: string;
+}
+
+export type ResearchConflictType = typeof ResearchConflictType[keyof typeof ResearchConflictType];
+
+
+export const ResearchConflictType = {
+  contradiction: 'contradiction',
+  date_difference: 'date_difference',
+  definition_difference: 'definition_difference',
+  scope_difference: 'scope_difference',
+  methodology_difference: 'methodology_difference',
+} as const;
+
+export interface ResearchConflict {
+  id: string;
+  claimIds: string[];
+  evidenceIds: string[];
+  type: ResearchConflictType;
+  description: string;
+  resolved: boolean;
+}
+
+export interface ClaimAgreement {
+  claimIds: string[];
+  description: string;
+}
+
+export interface ClaimAnalysis {
+  question: string;
+  /** @maxItems 16 */
+  claims: ResearchClaim[];
+  /** @maxItems 12 */
+  conflicts: ResearchConflict[];
+  /** @maxItems 12 */
+  agreement: ClaimAgreement[];
+  /** @maxItems 12 */
+  unresolvedConflicts: ResearchConflict[];
+  provider: string;
+  model: string;
+}
+
+export interface SynthesizeResearchRequest {
+  /**
+     * @minLength 5
+     * @maxLength 2000
+     */
+  question: string;
+  plan?: ResearchPlan;
+  /**
+     * @minItems 1
+     * @maxItems 24
+     */
+  evidence: EvidenceItem[];
+  analysis: ClaimAnalysis;
+}
+
+export type CitedStatementKind = typeof CitedStatementKind[keyof typeof CitedStatementKind];
+
+
+export const CitedStatementKind = {
+  fact: 'fact',
+  interpretation: 'interpretation',
+} as const;
+
+export interface CitedStatement {
+  text: string;
+  citationIds: string[];
+  kind: CitedStatementKind;
+}
+
+export interface QuestionFindings {
+  subQuestionId: string;
+  question: string;
+  findings: CitedStatement[];
+}
+
+export interface ResearchCitation {
+  id: string;
+  evidenceId: string;
+  url: string;
+  title: string;
+  domain: string;
+}
+
+export interface ResearchSynthesis {
+  question: string;
+  executiveSummary: CitedStatement;
+  /** @maxItems 10 */
+  keyFindings: CitedStatement[];
+  /** @maxItems 6 */
+  findingsByQuestion: QuestionFindings[];
+  supportingEvidenceIds: string[];
+  contradictingEvidenceIds: string[];
+  /** @maxItems 8 */
+  agreement: CitedStatement[];
+  /** @maxItems 8 */
+  unresolvedConflicts: CitedStatement[];
+  /** @maxItems 8 */
+  evidenceGaps: string[];
+  /** @maxItems 8 */
+  limitations: string[];
+  conclusion: CitedStatement;
+  citations: ResearchCitation[];
+  provider: string;
+  model: string;
+}
+
+export interface RunResearchRequest {
+  /**
+     * @minLength 5
+     * @maxLength 2000
+     */
+  question: string;
+}
+
+export type ResearchRunStatus = typeof ResearchRunStatus[keyof typeof ResearchRunStatus];
+
+
+export const ResearchRunStatus = {
+  completed: 'completed',
+  completed_with_partial_results: 'completed_with_partial_results',
+  failed: 'failed',
+} as const;
+
+export type ResearchProgressEventStage = typeof ResearchProgressEventStage[keyof typeof ResearchProgressEventStage];
+
+
+export const ResearchProgressEventStage = {
+  understanding_question: 'understanding_question',
+  creating_plan: 'creating_plan',
+  searching: 'searching',
+  classifying_sources: 'classifying_sources',
+  reading_sources: 'reading_sources',
+  extracting_evidence: 'extracting_evidence',
+  analyzing_claims: 'analyzing_claims',
+  synthesizing: 'synthesizing',
+  completed: 'completed',
+  failed: 'failed',
+} as const;
+
+export type ResearchProgressEventStatus = typeof ResearchProgressEventStatus[keyof typeof ResearchProgressEventStatus];
+
+
+export const ResearchProgressEventStatus = {
+  started: 'started',
+  completed: 'completed',
+  skipped: 'skipped',
+  failed: 'failed',
+} as const;
+
+export interface ResearchProgressEvent {
+  stage: ResearchProgressEventStage;
+  status: ResearchProgressEventStatus;
+  detail?: string;
+}
+
+export type ResearchSourceRecordReadStatus = typeof ResearchSourceRecordReadStatus[keyof typeof ResearchSourceRecordReadStatus];
+
+
+export const ResearchSourceRecordReadStatus = {
+  read: 'read',
+  failed: 'failed',
+  skipped: 'skipped',
+} as const;
+
+export interface ResearchSourceRecord {
+  url: string;
+  title?: string;
+  domain: string;
+  sourceType: string;
+  quality: string;
+  readStatus: ResearchSourceRecordReadStatus;
+  error?: string;
+}
+
+export interface ResearchStageError {
+  stage: string;
+  message: string;
+}
+
+export interface ResearchRunMetadata {
+  durationMs: number;
+  aiCalls: number;
+  sourcesAttempted: number;
+  sourcesRead: number;
+  evidenceCount: number;
+  provider: string;
+  model: string;
+}
+
+export interface ResearchRun {
+  researchId: string;
+  status: ResearchRunStatus;
+  question: string;
+  progress: ResearchProgressEvent[];
+  plan?: ResearchPlan;
+  sources: ResearchSourceRecord[];
+  evidence?: EvidenceExtraction;
+  analysis?: ClaimAnalysis;
+  synthesis?: ResearchSynthesis;
+  errors: ResearchStageError[];
+  metadata: ResearchRunMetadata;
+}
+
 export interface ErrorResponse {
   error: string;
   requestId?: string;

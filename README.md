@@ -2,7 +2,7 @@
 
 ResearchPilot is an AI-powered research workspace designed to find, verify, and explain evidence behind complex questions.
 
-This repository is being built in controlled phases. The current checkpoint is **Phase 6 — Source Classification**: ResearchPilot can validate a question, produce a structured planning outline, query a provider-independent search service, safely extract readable text from public HTML pages, and estimate source type and quality from domain signals.
+This repository is being built in controlled phases. The current checkpoint is **Phase 10 — Complete Research Pipeline**: ResearchPilot can plan a question, search, classify sources, read pages, extract sourced evidence, analyze claims and conflicts, synthesize a cited report, and run those steps as one bounded `POST /api/research` workflow. The product UI is not yet connected to that pipeline.
 
 ## Run locally
 
@@ -36,6 +36,12 @@ The Replit-managed workflows provide the required `PORT` and `BASE_PATH` values.
 - `/api/search`
 - `/api/webpage/read`
 - `/api/sources/classify`
+- `/api/research/plan`
+- `/api/research/evidence`
+- `/api/research/claims`
+- `/api/research/synthesize`
+- `/api/research`
+- `/api/research/{researchId}`
 
 ## Project map
 
@@ -71,4 +77,4 @@ If work resumes in a new environment, read `BUILD_STATUS.md`, then inspect the e
 
 ## Cost and limitations
 
-ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 6 build makes external Gemini calls through the provider verification and research planning routes, supports Brave Search through `SEARCH_API_KEY`, extracts public HTML without requiring a separate scraping service, and uses transparent domain heuristics for source classification.
+ResearchPilot is designed around open-source tooling and available free tiers for the MVP. External API and hosting quotas apply, and free usage is not unlimited. The Phase 10 build makes Gemini calls for planning, evidence, claims, and synthesis, uses Brave Search for discovery, extracts public HTML without a separate scraping service, and keeps citations grounded in extracted passages. Request bodies default to 256kb. A full research run is capped by `MAX_RESEARCH_TIME`, source counts, and bounded concurrency.

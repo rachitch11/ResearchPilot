@@ -11,7 +11,11 @@ const DEFAULTS = {
   maxResultsPerQuery: 5,
   webpageRequestTimeoutMs: 15_000,
   maxPageBytes: 2_000_000,
-  requestBodyLimit: "32kb",
+  requestBodyLimit: "256kb",
+  maxSourceCharsForAi: 6_000,
+  maxEvidenceItems: 20,
+  maxClaims: 16,
+  researchConcurrency: 3,
 } as const;
 
 function readPositiveInteger(
@@ -67,6 +71,26 @@ export const config = {
     10_000_000,
   ),
   requestBodyLimit: process.env.REQUEST_BODY_LIMIT ?? DEFAULTS.requestBodyLimit,
+  maxSourceCharsForAi: readPositiveInteger(
+    "MAX_SOURCE_CHARS_FOR_AI",
+    DEFAULTS.maxSourceCharsForAi,
+    20_000,
+  ),
+  maxEvidenceItems: readPositiveInteger(
+    "MAX_EVIDENCE_ITEMS",
+    DEFAULTS.maxEvidenceItems,
+    24,
+  ),
+  maxClaims: readPositiveInteger(
+    "MAX_CLAIMS",
+    DEFAULTS.maxClaims,
+    16,
+  ),
+  researchConcurrency: readPositiveInteger(
+    "RESEARCH_CONCURRENCY",
+    DEFAULTS.researchConcurrency,
+    6,
+  ),
   maxResearchPerHour: readPositiveInteger(
     "MAX_RESEARCH_PER_HOUR",
     DEFAULTS.maxResearchPerHour,

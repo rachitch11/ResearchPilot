@@ -107,6 +107,735 @@ export const CreateResearchPlanResponse = zod.object({
 
 
 /**
+ * Extracts sourced factual evidence from bounded webpage text
+ * @summary Extract evidence from sources
+ */
+export const extractEvidenceBodyQuestionMin = 5;
+export const extractEvidenceBodyQuestionMax = 2000;
+
+
+
+
+export const extractEvidenceBodySubQuestionsMax = 6;
+
+export const extractEvidenceBodySourcesItemUrlMin = 8;
+export const extractEvidenceBodySourcesItemUrlMax = 2048;
+
+export const extractEvidenceBodySourcesItemTitleMax = 500;
+
+export const extractEvidenceBodySourcesItemDomainMax = 255;
+
+export const extractEvidenceBodySourcesItemPublicationDateMax = 64;
+
+export const extractEvidenceBodySourcesItemSourceTypeMax = 64;
+
+export const extractEvidenceBodySourcesItemCleanTextMax = 20000;
+
+export const extractEvidenceBodySourcesMax = 8;
+
+
+
+export const ExtractEvidenceBody = zod.object({
+  "question": zod.string().min(extractEvidenceBodyQuestionMin).max(extractEvidenceBodyQuestionMax),
+  "subQuestions": zod.array(zod.object({
+  "id": zod.string().min(1),
+  "question": zod.string().min(1),
+  "rationale": zod.string().min(1)
+})).min(1).max(extractEvidenceBodySubQuestionsMax),
+  "sources": zod.array(zod.object({
+  "url": zod.string().min(extractEvidenceBodySourcesItemUrlMin).max(extractEvidenceBodySourcesItemUrlMax),
+  "title": zod.string().max(extractEvidenceBodySourcesItemTitleMax),
+  "domain": zod.string().max(extractEvidenceBodySourcesItemDomainMax),
+  "publicationDate": zod.string().max(extractEvidenceBodySourcesItemPublicationDateMax).optional(),
+  "sourceType": zod.string().max(extractEvidenceBodySourcesItemSourceTypeMax).optional(),
+  "cleanText": zod.string().max(extractEvidenceBodySourcesItemCleanTextMax)
+})).min(1).max(extractEvidenceBodySourcesMax)
+})
+
+export const extractEvidenceResponseItemsMax = 24;
+
+
+
+export const ExtractEvidenceResponse = zod.object({
+  "question": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "claim": zod.string(),
+  "passage": zod.string(),
+  "summary": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceTitle": zod.string(),
+  "sourceDomain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "sourceType": zod.string().optional(),
+  "subQuestionId": zod.string(),
+  "confidence": zod.enum(['high', 'medium', 'low'])
+})).max(extractEvidenceResponseItemsMax),
+  "skippedSources": zod.array(zod.object({
+  "url": zod.string(),
+  "reason": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+
+
+/**
+ * Groups evidence into claims and identifies genuine conflicts without picking winners
+ * @summary Analyze claims and conflicts
+ */
+export const analyzeClaimsBodyQuestionMin = 5;
+export const analyzeClaimsBodyQuestionMax = 2000;
+
+export const analyzeClaimsBodyEvidenceMax = 24;
+
+
+
+export const AnalyzeClaimsBody = zod.object({
+  "question": zod.string().min(analyzeClaimsBodyQuestionMin).max(analyzeClaimsBodyQuestionMax),
+  "evidence": zod.array(zod.object({
+  "id": zod.string(),
+  "claim": zod.string(),
+  "passage": zod.string(),
+  "summary": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceTitle": zod.string(),
+  "sourceDomain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "sourceType": zod.string().optional(),
+  "subQuestionId": zod.string(),
+  "confidence": zod.enum(['high', 'medium', 'low'])
+})).min(1).max(analyzeClaimsBodyEvidenceMax)
+})
+
+export const analyzeClaimsResponseClaimsMax = 16;
+
+export const analyzeClaimsResponseConflictsMax = 12;
+
+export const analyzeClaimsResponseAgreementMax = 12;
+
+export const analyzeClaimsResponseUnresolvedConflictsMax = 12;
+
+
+
+export const AnalyzeClaimsResponse = zod.object({
+  "question": zod.string(),
+  "claims": zod.array(zod.object({
+  "id": zod.string(),
+  "statement": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "support": zod.enum(['supported', 'insufficient', 'unsupported']),
+  "notes": zod.string().optional()
+})).max(analyzeClaimsResponseClaimsMax),
+  "conflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(analyzeClaimsResponseConflictsMax),
+  "agreement": zod.array(zod.object({
+  "claimIds": zod.array(zod.string()),
+  "description": zod.string()
+})).max(analyzeClaimsResponseAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(analyzeClaimsResponseUnresolvedConflictsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+
+
+/**
+ * Builds a structured synthesis from evidence and claim analysis with traceable citations
+ * @summary Synthesize a cited research report
+ */
+export const synthesizeResearchBodyQuestionMin = 5;
+export const synthesizeResearchBodyQuestionMax = 2000;
+
+
+
+
+
+export const synthesizeResearchBodyPlanSubQuestionsMin = 2;
+export const synthesizeResearchBodyPlanSubQuestionsMax = 6;
+
+
+
+export const synthesizeResearchBodyPlanSearchQueriesMin = 3;
+export const synthesizeResearchBodyPlanSearchQueriesMax = 8;
+
+export const synthesizeResearchBodyPlanConstraintsMax = 8;
+
+export const synthesizeResearchBodyPlanAssumptionsMax = 8;
+
+export const synthesizeResearchBodyEvidenceMax = 24;
+
+export const synthesizeResearchBodyAnalysisClaimsMax = 16;
+
+export const synthesizeResearchBodyAnalysisConflictsMax = 12;
+
+export const synthesizeResearchBodyAnalysisAgreementMax = 12;
+
+export const synthesizeResearchBodyAnalysisUnresolvedConflictsMax = 12;
+
+
+
+export const SynthesizeResearchBody = zod.object({
+  "question": zod.string().min(synthesizeResearchBodyQuestionMin).max(synthesizeResearchBodyQuestionMax),
+  "plan": zod.object({
+  "question": zod.string(),
+  "objective": zod.string().min(1),
+  "subQuestions": zod.array(zod.object({
+  "id": zod.string().min(1),
+  "question": zod.string().min(1),
+  "rationale": zod.string().min(1)
+})).min(synthesizeResearchBodyPlanSubQuestionsMin).max(synthesizeResearchBodyPlanSubQuestionsMax),
+  "searchQueries": zod.array(zod.object({
+  "query": zod.string().min(1),
+  "purpose": zod.string().min(1)
+})).min(synthesizeResearchBodyPlanSearchQueriesMin).max(synthesizeResearchBodyPlanSearchQueriesMax),
+  "constraints": zod.array(zod.string()).max(synthesizeResearchBodyPlanConstraintsMax),
+  "assumptions": zod.array(zod.string()).max(synthesizeResearchBodyPlanAssumptionsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "evidence": zod.array(zod.object({
+  "id": zod.string(),
+  "claim": zod.string(),
+  "passage": zod.string(),
+  "summary": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceTitle": zod.string(),
+  "sourceDomain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "sourceType": zod.string().optional(),
+  "subQuestionId": zod.string(),
+  "confidence": zod.enum(['high', 'medium', 'low'])
+})).min(1).max(synthesizeResearchBodyEvidenceMax),
+  "analysis": zod.object({
+  "question": zod.string(),
+  "claims": zod.array(zod.object({
+  "id": zod.string(),
+  "statement": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "support": zod.enum(['supported', 'insufficient', 'unsupported']),
+  "notes": zod.string().optional()
+})).max(synthesizeResearchBodyAnalysisClaimsMax),
+  "conflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(synthesizeResearchBodyAnalysisConflictsMax),
+  "agreement": zod.array(zod.object({
+  "claimIds": zod.array(zod.string()),
+  "description": zod.string()
+})).max(synthesizeResearchBodyAnalysisAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(synthesizeResearchBodyAnalysisUnresolvedConflictsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+})
+
+export const synthesizeResearchResponseKeyFindingsMax = 10;
+
+export const synthesizeResearchResponseFindingsByQuestionMax = 6;
+
+export const synthesizeResearchResponseAgreementMax = 8;
+
+export const synthesizeResearchResponseUnresolvedConflictsMax = 8;
+
+export const synthesizeResearchResponseEvidenceGapsMax = 8;
+
+export const synthesizeResearchResponseLimitationsMax = 8;
+
+
+
+export const SynthesizeResearchResponse = zod.object({
+  "question": zod.string(),
+  "executiveSummary": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "keyFindings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(synthesizeResearchResponseKeyFindingsMax),
+  "findingsByQuestion": zod.array(zod.object({
+  "subQuestionId": zod.string(),
+  "question": zod.string(),
+  "findings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}))
+})).max(synthesizeResearchResponseFindingsByQuestionMax),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "contradictingEvidenceIds": zod.array(zod.string()),
+  "agreement": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(synthesizeResearchResponseAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(synthesizeResearchResponseUnresolvedConflictsMax),
+  "evidenceGaps": zod.array(zod.string()).max(synthesizeResearchResponseEvidenceGapsMax),
+  "limitations": zod.array(zod.string()).max(synthesizeResearchResponseLimitationsMax),
+  "conclusion": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "citations": zod.array(zod.object({
+  "id": zod.string(),
+  "evidenceId": zod.string(),
+  "url": zod.string(),
+  "title": zod.string(),
+  "domain": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+
+
+/**
+ * Plans, searches, reads, extracts, analyzes, and synthesizes a bounded research report
+ * @summary Run a complete research workflow
+ */
+export const runResearchBodyQuestionMin = 5;
+export const runResearchBodyQuestionMax = 2000;
+
+
+
+export const RunResearchBody = zod.object({
+  "question": zod.string().min(runResearchBodyQuestionMin).max(runResearchBodyQuestionMax)
+})
+
+
+
+
+
+export const runResearchResponsePlanSubQuestionsMin = 2;
+export const runResearchResponsePlanSubQuestionsMax = 6;
+
+
+
+export const runResearchResponsePlanSearchQueriesMin = 3;
+export const runResearchResponsePlanSearchQueriesMax = 8;
+
+export const runResearchResponsePlanConstraintsMax = 8;
+
+export const runResearchResponsePlanAssumptionsMax = 8;
+
+export const runResearchResponseEvidenceItemsMax = 24;
+
+export const runResearchResponseAnalysisClaimsMax = 16;
+
+export const runResearchResponseAnalysisConflictsMax = 12;
+
+export const runResearchResponseAnalysisAgreementMax = 12;
+
+export const runResearchResponseAnalysisUnresolvedConflictsMax = 12;
+
+export const runResearchResponseSynthesisKeyFindingsMax = 10;
+
+export const runResearchResponseSynthesisFindingsByQuestionMax = 6;
+
+export const runResearchResponseSynthesisAgreementMax = 8;
+
+export const runResearchResponseSynthesisUnresolvedConflictsMax = 8;
+
+export const runResearchResponseSynthesisEvidenceGapsMax = 8;
+
+export const runResearchResponseSynthesisLimitationsMax = 8;
+
+
+
+export const RunResearchResponse = zod.object({
+  "researchId": zod.string(),
+  "status": zod.enum(['completed', 'completed_with_partial_results', 'failed']),
+  "question": zod.string(),
+  "progress": zod.array(zod.object({
+  "stage": zod.enum(['understanding_question', 'creating_plan', 'searching', 'classifying_sources', 'reading_sources', 'extracting_evidence', 'analyzing_claims', 'synthesizing', 'completed', 'failed']),
+  "status": zod.enum(['started', 'completed', 'skipped', 'failed']),
+  "detail": zod.string().optional()
+})),
+  "plan": zod.object({
+  "question": zod.string(),
+  "objective": zod.string().min(1),
+  "subQuestions": zod.array(zod.object({
+  "id": zod.string().min(1),
+  "question": zod.string().min(1),
+  "rationale": zod.string().min(1)
+})).min(runResearchResponsePlanSubQuestionsMin).max(runResearchResponsePlanSubQuestionsMax),
+  "searchQueries": zod.array(zod.object({
+  "query": zod.string().min(1),
+  "purpose": zod.string().min(1)
+})).min(runResearchResponsePlanSearchQueriesMin).max(runResearchResponsePlanSearchQueriesMax),
+  "constraints": zod.array(zod.string()).max(runResearchResponsePlanConstraintsMax),
+  "assumptions": zod.array(zod.string()).max(runResearchResponsePlanAssumptionsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "sources": zod.array(zod.object({
+  "url": zod.string(),
+  "title": zod.string().optional(),
+  "domain": zod.string(),
+  "sourceType": zod.string(),
+  "quality": zod.string(),
+  "readStatus": zod.enum(['read', 'failed', 'skipped']),
+  "error": zod.string().optional()
+})),
+  "evidence": zod.object({
+  "question": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "claim": zod.string(),
+  "passage": zod.string(),
+  "summary": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceTitle": zod.string(),
+  "sourceDomain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "sourceType": zod.string().optional(),
+  "subQuestionId": zod.string(),
+  "confidence": zod.enum(['high', 'medium', 'low'])
+})).max(runResearchResponseEvidenceItemsMax),
+  "skippedSources": zod.array(zod.object({
+  "url": zod.string(),
+  "reason": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "analysis": zod.object({
+  "question": zod.string(),
+  "claims": zod.array(zod.object({
+  "id": zod.string(),
+  "statement": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "support": zod.enum(['supported', 'insufficient', 'unsupported']),
+  "notes": zod.string().optional()
+})).max(runResearchResponseAnalysisClaimsMax),
+  "conflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(runResearchResponseAnalysisConflictsMax),
+  "agreement": zod.array(zod.object({
+  "claimIds": zod.array(zod.string()),
+  "description": zod.string()
+})).max(runResearchResponseAnalysisAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(runResearchResponseAnalysisUnresolvedConflictsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "synthesis": zod.object({
+  "question": zod.string(),
+  "executiveSummary": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "keyFindings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(runResearchResponseSynthesisKeyFindingsMax),
+  "findingsByQuestion": zod.array(zod.object({
+  "subQuestionId": zod.string(),
+  "question": zod.string(),
+  "findings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}))
+})).max(runResearchResponseSynthesisFindingsByQuestionMax),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "contradictingEvidenceIds": zod.array(zod.string()),
+  "agreement": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(runResearchResponseSynthesisAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(runResearchResponseSynthesisUnresolvedConflictsMax),
+  "evidenceGaps": zod.array(zod.string()).max(runResearchResponseSynthesisEvidenceGapsMax),
+  "limitations": zod.array(zod.string()).max(runResearchResponseSynthesisLimitationsMax),
+  "conclusion": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "citations": zod.array(zod.object({
+  "id": zod.string(),
+  "evidenceId": zod.string(),
+  "url": zod.string(),
+  "title": zod.string(),
+  "domain": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "errors": zod.array(zod.object({
+  "stage": zod.string(),
+  "message": zod.string()
+})),
+  "metadata": zod.object({
+  "durationMs": zod.number(),
+  "aiCalls": zod.number(),
+  "sourcesAttempted": zod.number(),
+  "sourcesRead": zod.number(),
+  "evidenceCount": zod.number(),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+})
+
+
+/**
+ * Returns a previously completed in-memory research run
+ * @summary Get a research run
+ */
+export const getResearchPathResearchIdMin = 8;
+export const getResearchPathResearchIdMax = 64;
+
+
+
+export const GetResearchParams = zod.object({
+  "researchId": zod.coerce.string().min(getResearchPathResearchIdMin).max(getResearchPathResearchIdMax)
+})
+
+
+
+
+
+export const getResearchResponsePlanSubQuestionsMin = 2;
+export const getResearchResponsePlanSubQuestionsMax = 6;
+
+
+
+export const getResearchResponsePlanSearchQueriesMin = 3;
+export const getResearchResponsePlanSearchQueriesMax = 8;
+
+export const getResearchResponsePlanConstraintsMax = 8;
+
+export const getResearchResponsePlanAssumptionsMax = 8;
+
+export const getResearchResponseEvidenceItemsMax = 24;
+
+export const getResearchResponseAnalysisClaimsMax = 16;
+
+export const getResearchResponseAnalysisConflictsMax = 12;
+
+export const getResearchResponseAnalysisAgreementMax = 12;
+
+export const getResearchResponseAnalysisUnresolvedConflictsMax = 12;
+
+export const getResearchResponseSynthesisKeyFindingsMax = 10;
+
+export const getResearchResponseSynthesisFindingsByQuestionMax = 6;
+
+export const getResearchResponseSynthesisAgreementMax = 8;
+
+export const getResearchResponseSynthesisUnresolvedConflictsMax = 8;
+
+export const getResearchResponseSynthesisEvidenceGapsMax = 8;
+
+export const getResearchResponseSynthesisLimitationsMax = 8;
+
+
+
+export const GetResearchResponse = zod.object({
+  "researchId": zod.string(),
+  "status": zod.enum(['completed', 'completed_with_partial_results', 'failed']),
+  "question": zod.string(),
+  "progress": zod.array(zod.object({
+  "stage": zod.enum(['understanding_question', 'creating_plan', 'searching', 'classifying_sources', 'reading_sources', 'extracting_evidence', 'analyzing_claims', 'synthesizing', 'completed', 'failed']),
+  "status": zod.enum(['started', 'completed', 'skipped', 'failed']),
+  "detail": zod.string().optional()
+})),
+  "plan": zod.object({
+  "question": zod.string(),
+  "objective": zod.string().min(1),
+  "subQuestions": zod.array(zod.object({
+  "id": zod.string().min(1),
+  "question": zod.string().min(1),
+  "rationale": zod.string().min(1)
+})).min(getResearchResponsePlanSubQuestionsMin).max(getResearchResponsePlanSubQuestionsMax),
+  "searchQueries": zod.array(zod.object({
+  "query": zod.string().min(1),
+  "purpose": zod.string().min(1)
+})).min(getResearchResponsePlanSearchQueriesMin).max(getResearchResponsePlanSearchQueriesMax),
+  "constraints": zod.array(zod.string()).max(getResearchResponsePlanConstraintsMax),
+  "assumptions": zod.array(zod.string()).max(getResearchResponsePlanAssumptionsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "sources": zod.array(zod.object({
+  "url": zod.string(),
+  "title": zod.string().optional(),
+  "domain": zod.string(),
+  "sourceType": zod.string(),
+  "quality": zod.string(),
+  "readStatus": zod.enum(['read', 'failed', 'skipped']),
+  "error": zod.string().optional()
+})),
+  "evidence": zod.object({
+  "question": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "claim": zod.string(),
+  "passage": zod.string(),
+  "summary": zod.string(),
+  "sourceUrl": zod.string(),
+  "sourceTitle": zod.string(),
+  "sourceDomain": zod.string(),
+  "publicationDate": zod.string().optional(),
+  "sourceType": zod.string().optional(),
+  "subQuestionId": zod.string(),
+  "confidence": zod.enum(['high', 'medium', 'low'])
+})).max(getResearchResponseEvidenceItemsMax),
+  "skippedSources": zod.array(zod.object({
+  "url": zod.string(),
+  "reason": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "analysis": zod.object({
+  "question": zod.string(),
+  "claims": zod.array(zod.object({
+  "id": zod.string(),
+  "statement": zod.string(),
+  "evidenceIds": zod.array(zod.string()),
+  "support": zod.enum(['supported', 'insufficient', 'unsupported']),
+  "notes": zod.string().optional()
+})).max(getResearchResponseAnalysisClaimsMax),
+  "conflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(getResearchResponseAnalysisConflictsMax),
+  "agreement": zod.array(zod.object({
+  "claimIds": zod.array(zod.string()),
+  "description": zod.string()
+})).max(getResearchResponseAnalysisAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "id": zod.string(),
+  "claimIds": zod.array(zod.string()),
+  "evidenceIds": zod.array(zod.string()),
+  "type": zod.enum(['contradiction', 'date_difference', 'definition_difference', 'scope_difference', 'methodology_difference']),
+  "description": zod.string(),
+  "resolved": zod.boolean()
+})).max(getResearchResponseAnalysisUnresolvedConflictsMax),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "synthesis": zod.object({
+  "question": zod.string(),
+  "executiveSummary": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "keyFindings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(getResearchResponseSynthesisKeyFindingsMax),
+  "findingsByQuestion": zod.array(zod.object({
+  "subQuestionId": zod.string(),
+  "question": zod.string(),
+  "findings": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}))
+})).max(getResearchResponseSynthesisFindingsByQuestionMax),
+  "supportingEvidenceIds": zod.array(zod.string()),
+  "contradictingEvidenceIds": zod.array(zod.string()),
+  "agreement": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(getResearchResponseSynthesisAgreementMax),
+  "unresolvedConflicts": zod.array(zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+})).max(getResearchResponseSynthesisUnresolvedConflictsMax),
+  "evidenceGaps": zod.array(zod.string()).max(getResearchResponseSynthesisEvidenceGapsMax),
+  "limitations": zod.array(zod.string()).max(getResearchResponseSynthesisLimitationsMax),
+  "conclusion": zod.object({
+  "text": zod.string(),
+  "citationIds": zod.array(zod.string()),
+  "kind": zod.enum(['fact', 'interpretation'])
+}),
+  "citations": zod.array(zod.object({
+  "id": zod.string(),
+  "evidenceId": zod.string(),
+  "url": zod.string(),
+  "title": zod.string(),
+  "domain": zod.string()
+})),
+  "provider": zod.string(),
+  "model": zod.string()
+}).optional(),
+  "errors": zod.array(zod.object({
+  "stage": zod.string(),
+  "message": zod.string()
+})),
+  "metadata": zod.object({
+  "durationMs": zod.number(),
+  "aiCalls": zod.number(),
+  "sourcesAttempted": zod.number(),
+  "sourcesRead": zod.number(),
+  "evidenceCount": zod.number(),
+  "provider": zod.string(),
+  "model": zod.string()
+})
+})
+
+
+/**
  * Runs bounded search intents and returns normalized, deduplicated results
  * @summary Search the web
  */
