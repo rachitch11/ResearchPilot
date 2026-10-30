@@ -2,7 +2,7 @@
 
 ResearchPilot is an AI-powered research workspace designed to find, verify, and explain evidence behind complex questions.
 
-This repository is being built in controlled phases. The current checkpoint is **Phase 10 — Complete Research Pipeline**: ResearchPilot can plan a question, search, classify sources, read pages, extract sourced evidence, analyze claims and conflicts, synthesize a cited report, and run those steps as one bounded `POST /api/research` workflow. The product UI is not yet connected to that pipeline.
+This repository is being built in controlled phases. The current checkpoint is **Phase 16 — Error Handling and UX Polish**: the React workspace submits questions to `POST /api/research`, loads runs from `GET /api/research/{researchId}`, and renders backend progress, sources, citations, and reports. Provider keys stay on the server.
 
 ## Run locally
 
@@ -20,14 +20,16 @@ pnpm install
 Start the API service:
 
 ```bash
-pnpm --filter @workspace/api-server run dev
+PORT=8000 pnpm --filter @workspace/api-server run dev
 ```
 
 Start the frontend in a second terminal:
 
 ```bash
-pnpm --filter @workspace/researchpilot run dev
+PORT=5173 BASE_PATH=/ API_ORIGIN=http://127.0.0.1:8000 pnpm --filter @workspace/researchpilot run dev
 ```
+
+Do not put `GEMINI_API_KEY` or `SEARCH_API_KEY` in frontend env. Vite proxies `/api` to `API_ORIGIN`.
 
 The Replit-managed workflows provide the required `PORT` and `BASE_PATH` values. The API health response is available through the shared proxy at:
 

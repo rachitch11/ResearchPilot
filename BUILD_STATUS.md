@@ -2,7 +2,7 @@
 
 ## Current phase
 
-**Phase 10 — Complete Research Pipeline**
+**Phase 16 — Error Handling and UX Polish**
 
 ## Completed phases
 
@@ -17,63 +17,61 @@
 - Phase 8 — Claim Analysis and Conflict Detection
 - Phase 9 — Evidence Synthesis
 - Phase 10 — Complete Research Pipeline
+- Phase 11 — Frontend Foundation
+- Phase 12 — Research Workspace
+- Phase 13 — Source Interface
+- Phase 14 — Final Report Interface
+- Phase 15 — Frontend/Backend Integration
+- Phase 16 — Error Handling and UX Polish
 
 ## Current implementation status
 
-- The project has a deployable React + Vite frontend artifact at the root route. The landing page remains a Phase 0/11-era shell and is not wired to the research pipeline.
-- The API service has runtime configuration, request limits, CORS, structured logging, typed errors, and health checks at `/api/healthz` and `/api/health`.
-- `GET /api/ai/status` and `POST /api/ai/test` remain available for Gemini provider verification.
-- `POST /api/research/plan` produces a structured research plan.
-- `POST /api/search`, `POST /api/webpage/read`, and `POST /api/sources/classify` remain available.
-- `POST /api/research/evidence` extracts sourced evidence, keeps exact passages separate from summaries, and drops quotations that cannot be found in the source text.
-- `POST /api/research/claims` groups evidence into claims, marks insufficient/unsupported claims, and records conflicts without choosing a winner.
-- `POST /api/research/synthesize` produces a cited synthesis. Citation URLs and evidence IDs are rebuilt from supplied evidence; uncited “facts” are dropped or marked interpretive.
-- `POST /api/research` runs the bounded pipeline: plan → search → classify → read → extract → analyze → synthesize. Partial source failures are allowed. Runs are stored in memory for `GET /api/research/{researchId}`.
-- Authentication, analytics, evaluation, and the Phase 11–15 research workspace UI are not implemented.
+- The React + Vite app is a research workspace: home question form, local history, and `/research/:researchId`.
+- The frontend calls `POST /api/research` and `GET /api/research/{researchId}` through the generated client. Vite proxies `/api` to `API_ORIGIN`.
+- While a run is in flight, the UI shows a waiting state. Stage markers are taken from the backend `progress` array after the API returns; they are not simulated.
+- Source cards show classification, quality, read status, open-source links, and exact extracted passages distinct from summaries.
+- The report UI renders executive summary, findings, sub-questions, conflicts, limitations, conclusion, and citation links that only resolve to collected source URLs.
+- Duplicate submissions are blocked while a run is pending. 400/404/429/500/503 and timeouts map to user-facing errors. Partial results show a dedicated banner.
+- Gemini and Brave keys are not used in the frontend.
+- Authentication, analytics, evaluation, and HTTP rate limiting remain later phases.
 
 ## Files added or modified
 
-- `lib/api-spec/openapi.yaml` — evidence, claims, synthesis, and research-run contracts
-- `lib/api-zod/` and `lib/api-client-react/` — regenerated from OpenAPI
-- `artifacts/api-server/src/config.ts` — research bounds and 256kb JSON body limit
-- `artifacts/api-server/src/lib/json.ts`, `text.ts`, `ai-json.ts` — shared parsing, truncation, and JSON generation
-- `artifacts/api-server/src/services/evidence-extractor.ts`
-- `artifacts/api-server/src/services/claim-analyzer.ts`
-- `artifacts/api-server/src/services/synthesizer.ts`
-- `artifacts/api-server/src/services/research-orchestrator.ts`
-- `artifacts/api-server/src/services/research-store.ts`
-- `artifacts/api-server/src/routes/research.ts`
-- `artifacts/api-server/src/**/*.test.ts` — focused unit and mocked pipeline tests
-- `.env.example` and `README.md`
+- `artifacts/researchpilot/src/App.tsx` — routes for home and research workspace
+- `artifacts/researchpilot/src/pages/home.tsx`, `research.tsx`, `not-found.tsx`
+- `artifacts/researchpilot/src/components/layout/site-header.tsx`
+- `artifacts/researchpilot/src/components/research/*`
+- `artifacts/researchpilot/src/hooks/use-research-runner.ts`
+- `artifacts/researchpilot/src/lib/citations.ts`, `api-errors.ts`, `research-history.ts`, `progress.ts`
+- `artifacts/researchpilot/vite.config.ts` — `/api` proxy
+- `pnpm-workspace.yaml` — Darwin ARM64 Rollup/Lightningcss/Tailwind/esbuild native binaries no longer forced off
+- `.env.example`, `README.md`
 
 ## Tests completed
 
-- API server typecheck
-- API server production bundle
-- `pnpm --filter @workspace/api-server run test` — 14/14 passing
-- Frontend typecheck
-- Health, 404, source classification, evidence validation, empty-source extraction, missing research-run, and SSRF rejection against a running API
-- Live `POST /api/webpage/read` against `https://example.com/`
-- Live Gemini and Brave Search were not available in this environment (`GEMINI_API_KEY` / `SEARCH_API_KEY` unset)
+- Frontend typecheck PASS
+- `pnpm --filter @workspace/researchpilot run test` — 2/2 citation grounding tests PASS
+- API typecheck and `pnpm --filter @workspace/api-server run test` — 14/14 PASS
+- Frontend production build PASS on Darwin ARM64 after restoring `@rollup/rollup-darwin-arm64`
+- Browser: home loads, API connected, empty-question validation, 503 when providers are unconfigured, 404 for unknown research IDs, mobile header no longer overlaps the brand
+- Live Gemini + Brave `POST /api/research` NOT TESTED (keys unset)
 
 ## Test result
 
-PASS for Phases 7–10 with mocked providers. Live end-to-end `POST /api/research` is NOT TESTED because provider secrets were not present. Frontend production Vite build is FAIL on this Darwin host because workspace pnpm overrides omit `@rollup/rollup-darwin-arm64`; frontend typecheck PASS.
+PASS for Phases 11–16 UI and integration against the running API without provider secrets. Live cited-report generation is NOT TESTED.
 
 ## Known issues
 
-- Research runs are in-memory only and are lost on process restart.
-- Rate-limit config exists but is not enforced as HTTP rate limiting (planned Phase 17).
-- Frontend does not render progress, citations, or reports (Phases 11–15).
-- Live Gemini/Brave verification remains pending when secrets are not loaded into the process environment.
-- Frontend production build on macOS requires the Rollup native binary currently excluded by `pnpm-workspace.yaml` overrides.
+- Research runs remain in-memory on the API and disappear on restart.
+- POST `/api/research` is synchronous, so live stage ticks are unavailable until the response returns.
+- HTTP rate limiting is still config-only (Phase 17).
+- Full source/report screens need a successful pipeline run with Gemini and Brave.
 
 ## Required environment variables
 
-- `GEMINI_API_KEY` is required for planning, evidence, claims, synthesis, and `POST /api/research`.
-- `SEARCH_API_KEY` is required for live search and `POST /api/research`.
-- `REQUEST_BODY_LIMIT` defaults to `256kb` so evidence payloads can be accepted.
+- API: `PORT`, `GEMINI_API_KEY`, `SEARCH_API_KEY` for live research
+- Frontend: `PORT`, `BASE_PATH`, `API_ORIGIN` (Vite proxy). Never put provider keys in the browser env.
 
 ## Next phase
 
-Phase 11 — Frontend Foundation
+Phase 17 — Rate Limiting
